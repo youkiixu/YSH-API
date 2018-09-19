@@ -1,7 +1,16 @@
 package www.kiy.cn.service;
 
-public interface TestService {
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-	public void Test();
+import www.kiy.cn.youki.JMap;
+
+public interface TestService {
+	
+	
+	JMap tbSaveTest();
+	
 	
 }
