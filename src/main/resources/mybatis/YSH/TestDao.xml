@@ -4,7 +4,7 @@
 <!-- 系统级别 SQL 配置 -->
 <mapper namespace="www.kiy.cn.dao.TestDao">
 
-	<insert id="insertTableA" parameterType="www.kiy.cn.youki.JMap"
+	<insert id="insertTableA"  parameterType="www.kiy.cn.youki.JMap"
 		useGeneratedKeys="true" keyProperty="id" keyColumn="Id">
 		insert into tblA
 		values(#{a})

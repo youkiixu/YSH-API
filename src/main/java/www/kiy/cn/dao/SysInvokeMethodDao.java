@@ -12,4 +12,5 @@ public interface SysInvokeMethodDao {
 	
 	List<JMap> getEntityByName(@Param("strName") String strName);
 	
+	List<JMap> SysAppConfigInfo(@Param("appid")String appid , @Param("domain")String domain);
 }

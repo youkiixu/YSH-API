@@ -56,7 +56,8 @@ public class RedisConfig {
 		System.out.println("Redis-Config-Connection");
 		JedisConnectionFactory redisConnectionFactory = new JedisConnectionFactory();
 		redisConnectionFactory.setHostName(host);
-		redisConnectionFactory.setPort(port);
+		redisConnectionFactory.setPort(port); 
+		
 //		JedisPoolConfig jd = new JedisPoolConfig(); 
 //		redisConnectionFactory.setPoolConfig(jd);
 		redisConnectionFactory.setPassword(password); 

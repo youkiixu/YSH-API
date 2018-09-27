@@ -40,8 +40,9 @@ public class CacheInfo {
 	public JMap getMap(String key) {
 		if (!exits(key))
 			return null;
-		ValueOperations<String, JMap> operations = redisTemplate.opsForValue();
-		JMap map = operations.get(key);
+		JMap map = this.valOpsMap.get(key);
+		//ValueOperations<String, JMap> operations = redisTemplate.opsForValue();
+		//JMap map = SetLog.ObjectToMap( operations.get(key));
 
 		return map;
 	}
@@ -59,12 +60,12 @@ public class CacheInfo {
 	 */
 	public void putString(String key, String value, int expireMinute) {
 		if (exits(key))
-			strRedisTemplate.delete(key); 
+			strRedisTemplate.delete(key);  
 		 strRedisTemplate.opsForValue().set(key, value,expireMinute,TimeUnit.MINUTES);	  
 	}
 
 	public void putJMap(String key, JMap value) {
-		putJMap(key, value,  -1);
+		putJMap(key, value,  60*24*7);
 
 	}
 

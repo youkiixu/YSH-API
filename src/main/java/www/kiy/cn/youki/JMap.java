@@ -23,6 +23,14 @@ public class JMap  extends  HashMap<String,Object> {
 		return super.put(key, value);
 		
 	}
+	
+	public JMap getMap(String key){
+		if(key==null)
+			return null;
+		if(!super.containsKey(key))
+			return null;
+		return SetLog.ObjectToMap(super.get(key));
+	}
 //	private Map<String,Object> map = null;
 //	public JMap( ){
 //		map = new HashMap<String,Object>();

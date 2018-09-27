@@ -1,27 +1,34 @@
 package www.kiy.cn.api;
  
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
  
 import www.kiy.cn.service.TestService;
-import www.kiy.cn.youki.CacheInfo;
-import www.kiy.cn.youki.JMap;
+import www.kiy.cn.youki.CacheInfo; 
+import www.kiy.cn.youki.SetLog;
 
 @RestController
 @RequestMapping("/tt")
 public class TestController {
-
+	
 	@Autowired
 	TestService testService;
 	@Autowired
 	CacheInfo cacheInfo;
-	
+	public static final Logger log = LoggerFactory.getLogger(TestController.class);
 	@RequestMapping("/test")
 	 public String Index() {
+		log.info("msg");
+		SetLog.logInfo("testAAAAAAAAAA");
 		
-		String d =cacheInfo.getString("a");  
 		
+		/*
+		 cacheInfo.getString("a");  
+		 
+		 
 		cacheInfo.putString("kk", "222");
 		
 		cacheInfo.getString("kk");
@@ -36,9 +43,12 @@ public class TestController {
 		m.put("m1", m1);
 		
 		cacheInfo.putJMap("m",m);
-		cacheInfo.getMap("m");
+		cacheInfo.getMap("m");*/
 		
 		return "xxx";
 	}
+	
+	
+	
 
 }

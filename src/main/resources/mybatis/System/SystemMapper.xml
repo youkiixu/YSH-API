@@ -3,27 +3,48 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- 系统级别 SQL 配置 -->
 <mapper namespace="www.kiy.cn.dao.SysInvokeMethodDao">
- 
-		<sql id="AllColumns">
-			 p.strName as strProjectName,i.*
-		</sql>
-		<sql id="joinSysProject">
-			left join SysProject  p on p.ID = i.intSysProject 
-		</sql>
-		<select id="getEntityByName"  parameterType="String"  resultType="www.kiy.cn.youki.JMap"> 
-			select top 1 
-			<include refid="AllColumns"  /> 
-			from SysInvokeMethod  i
-			 <include refid="joinSysProject" />  
-			<where>
-				<if test="strName!=null and strName!=''"> 
-					i.strName=#{strName}
-				</if>
-			</where>
-			 <!-- <if test='strName !=null '>
-			 	i.strName=#{strName}
-			 </if> -->
-		</select> 
-		
-		
+	
+	<sql id="AllColumns">
+		p.strName as strProjectName,i.*
+	</sql>
+	<sql id="joinSysProject">
+		left join SysProject p on p.ID = i.intSysProject
+	</sql>
+	<select id="getEntityByName" parameterType="String"
+		resultType="www.kiy.cn.youki.JMap">
+		select top 1
+		<include refid="AllColumns" />
+		from SysInvokeMethod i
+		<include refid="joinSysProject" />
+		<where>
+			<if test="strName!=null and strName!=''">
+				i.strName=#{strName}
+			</if>
+		</where>
+		<!-- <if test='strName !=null '> i.strName=#{strName} </if> -->
+	</select>
+
+
+	<select id="SysAppConfigInfo"  parameterType="String"  resultType="www.kiy.cn.youki.JMap">
+		select * from SysAppConfig
+		<choose>
+			<when test="appid==null and domain==null">
+				where 1!=1
+			</when>
+			<otherwise>
+				where 1=1
+				<choose>
+					<when test="appid!=null">
+						and strAppid =#{appid}
+					</when>
+					<when test="appid!=null">
+						and strDomain = #{domain}
+					</when>
+				</choose>
+			</otherwise>
+		</choose>
+
+
+	</select>
+
 </mapper>
