@@ -33,8 +33,8 @@ public class YSHFilter implements Filter {
 		//getRemoteHost() 影响性能
 		SetLog.logInfo("doFilter-YSHFilter;RemoteAddr="+req.getRemoteAddr()+"");
 		
-		String ip= req.getRemoteAddr();
-		int port= req.getRemotePort();
+		//String ip= req.getRemoteAddr();
+		//int port= req.getRemotePort();
 		
 		arg2.doFilter(req,rep);
 	}

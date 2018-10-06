@@ -2,30 +2,30 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- 系统级别 SQL 配置 -->
-<mapper namespace="www.kiy.cn.dao.SysInvokeMethodDao">
-	
-	<sql id="AllColumns">
-		p.strName as strProjectName,i.*
+<mapper namespace="www.kiy.cn.dao.SystemDao">
+
+	<!--####################### Sql Start ################################ -->
+	<sql id="SysQueryMethodAllColumns">
+		q.*
 	</sql>
-	<sql id="joinSysProject">
-		left join SysProject p on p.ID = i.intSysProject
+	<sql id="SysQueryMethod">
+		SysQueryMethod q with(nolock)
 	</sql>
-	<select id="getEntityByName" parameterType="String"
-		resultType="www.kiy.cn.youki.JMap">
-		select top 1
-		<include refid="AllColumns" />
-		from SysInvokeMethod i
-		<include refid="joinSysProject" />
-		<where>
-			<if test="strName!=null and strName!=''">
-				i.strName=#{strName}
-			</if>
-		</where>
-		<!-- <if test='strName !=null '> i.strName=#{strName} </if> -->
+	<sql id="SysSqlFliterAllColumns"> f.* </sql>
+	<sql id="SysSqlFliter">SysSqlFliter f with(nolock) </sql>
+
+	<!--####################### Sql End ####################### -->
+	<!--####################### ResultType=JMap Start####################### -->
+	<select id="QueryMethodParams">
+		<include refid="SysQueryMethodAllColumns" />
+		,
+		<include refid="SysSqlFliterAllColumns" />
+		<include refid="SysQueryMethod" />
+		<include refid="SysSqlFliter" />
+		<where></where>
 	</select>
 
-
-	<select id="SysAppConfigInfo"  parameterType="String"  resultType="www.kiy.cn.youki.JMap">
+	<select id="SysAppConfigInfo" resultType="www.kiy.cn.youki.JMap">
 		select * from SysAppConfig
 		<choose>
 			<when test="appid==null and domain==null">
@@ -33,18 +33,39 @@
 			</when>
 			<otherwise>
 				where 1=1
-				<choose>
-					<when test="appid!=null">
-						and strAppid =#{appid}
-					</when>
-					<when test="appid!=null">
-						and strDomain = #{domain}
-					</when>
-				</choose>
+				<if test="appid!=null">
+					and strAppid =#{appid}
+				</if>
+				<if test="domain!=null">
+					and strDomain = #{domain}
+				</if>
 			</otherwise>
 		</choose>
+	</select>
+	<!--####################### ResultType=JMap End####################### -->
 
+	<!--####################### ResultMap Start ####################### -->
+	<resultMap id="dynamic" type="www.kiy.cn.youki.JMap" />
+	<resultMap id="dynamic2" type="www.kiy.cn.youki.JMap" />
+	<!--####################### ResultMap End####################### -->
+	<!--####################### ResultType=models Start####################### -->
+	<!-- resultMap="SysQueryMethod_M,SysSqlFliter_M" -->
+	<select id="SysQueryAndFliter" parameterType="www.kiy.cn.youki.JMap"
+		resultMap="dynamic,dynamic2">
+		select * from
+		SysQueryMethod with(nolock) where strName=
+		#{strName}
+		select
+		f.* from
+		SysSqlFliter f with(nolock)
+		inner join
+		SysQueryMethod s
+		with(nolock) on
+		s.uid=f.uidVouch
+		where
+		s.strName=#{strName} and
+		bNoUsed=0
 
 	</select>
-
+	<!--####################### ResultType=models End####################### -->
 </mapper>

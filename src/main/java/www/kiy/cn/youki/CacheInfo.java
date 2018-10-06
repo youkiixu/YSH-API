@@ -70,12 +70,21 @@ public class CacheInfo {
 	}
 
 	public void putJMap(String key, JMap value, int expireMinute) {
-		if (exits(key))
-			this.redisTemplate.delete(key);
-		if(expireMinute==-1)
-			this.valOpsMap.set(key, value);
-		else 
-			this.valOpsMap.set(key, value, expireMinute,TimeUnit.MINUTES);
+		if (exits(key)){
+			//this.redisTemplate.delete(key);
+			this.del(key);
+		}
+			
+		if(expireMinute==-1){
+			//	this.valOpsMap.set(key, value);			
+			this.putString(key, SetLog.GetJSONString(  value));
+		}
+		else {
+			this.putString(key, SetLog.GetJSONString(  value),expireMinute);
+			//this.valOpsMap.set(key, value, expireMinute,TimeUnit.MINUTES);
+			
+		}
+			
 		
 	}
 

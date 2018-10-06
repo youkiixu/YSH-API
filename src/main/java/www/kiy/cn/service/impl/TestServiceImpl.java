@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import www.kiy.cn.dao.SysInvokeMethodDao;
+import www.kiy.cn.dao.SystemDao;
 import www.kiy.cn.dao.TestDao;
 import www.kiy.cn.service.TestService;
 import www.kiy.cn.youki.JMap;
@@ -15,7 +15,7 @@ import www.kiy.cn.youki.JMap;
 public class TestServiceImpl implements TestService  {
 
 	@Resource
-	private  SysInvokeMethodDao sysInvokeMethodDao;
+	private  SystemDao systemDao;
 	
 	
 	@Resource
@@ -32,7 +32,7 @@ public class TestServiceImpl implements TestService  {
 		//int obj=	testDao.tbSaveTest(m);
 		//obj +=	testDao.tbSaveTest(m2); 
 		
-		sysInvokeMethodDao.getEntityByName("xxx");
+		systemDao.getEntityByName("xxx");
 		
 		int obj = testDao.insertTableA(m);
 		obj = testDao.insertTableA(m2);

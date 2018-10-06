@@ -4,8 +4,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.List; 
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +22,10 @@ public class SetLog {
 	public static JMap writeMapError(String msg) {
 		return writeMapError(msg, null, 0);
 	}
-
+	public static JMap writeMapError(String msg,String strSysError) {
+		return writeMapError(msg,strSysError, 0);
+		
+	}
 	public static JMap writeMapError(String str, String sysError, int errCode) {
 		JMap m = new JMap();
 		m.put("result", "err");
@@ -73,6 +75,8 @@ public class SetLog {
 
 	public static Object ObjectToObject(Object json, Class<?> cls) {
 		try {
+			if(json==null)
+				return json;
 			if (cls.getSimpleName().equals("String")) {
 				if (json.getClass().getSimpleName().equals("String"))
 					return String.valueOf(json);

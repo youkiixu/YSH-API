@@ -1,7 +1,7 @@
 package www.kiy.cn.youki;
+ 
 
-
-public class YSHException extends Exception{
+public class YSHException extends  Exception{
 
 	private static final long serialVersionUID = 1L;
 
