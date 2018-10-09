@@ -24,6 +24,7 @@ public class SaaSServiceImpl implements SaaSService {
 	private CacheInfo cacheInfo;
 	@Resource
 	SystemDao systemDao;
+	@Autowired
 	private SystemService systemService;
 
 	public JMap getAppConfig(String appid) {
@@ -53,9 +54,26 @@ public class SaaSServiceImpl implements SaaSService {
 		}
 		return configInfo;
 	}
+	
+	public JMap getDBConfig(String strAppid, boolean bDefault) {
+		return getDBConfig(strAppid, 0, null, bDefault);
+	}
+	public JMap getDBConfig(String strAppid, String strDBName, boolean bDefault) {
+		return getDBConfig(strAppid, 0, strDBName, bDefault);
+	}
+
+	public JMap getDBConfig(String strAppid, int intSysProject, String strDBName, boolean bDefault) {
+		
+		return null;
+	}
 
 	@Override
 	public Object getSaaSData(String strAppid,JMap map) throws YSHException {
+		return getSaaSData( strAppid, map,"jdbcTemplate");
+	}
+	@Override
+	public Object getSaaSData(String strAppid,JMap map,String type) throws YSHException {
+			 
 		// TODO Auto-generated method stub
 		JMap param = null;
 
@@ -70,6 +88,7 @@ public class SaaSServiceImpl implements SaaSService {
 //			} else {
 //				obj = getDataTableByMethod(strAppid,strMethod, param);
 //			} 
+			
 			Object obj = systemService.getDataTableBySystemDao(this.getAppConfig(strAppid),strMethod, param);
 			
 			if(obj.getClass().getName().equals("JMap")){

@@ -6,7 +6,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import www.kiy.cn.youki.YSHException;
 
-public interface ConnectPoolService {
+public interface MssqlPoolService {
 
 	void isClose(Connection cn);
 

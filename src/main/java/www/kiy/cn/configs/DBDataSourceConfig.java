@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.tomcat.jdbc.pool.DataSource;
+//import org.apache.tomcat.jdbc.pool.DataSource;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import www.kiy.cn.youki.Convert;
 import www.kiy.cn.youki.YSHException; 
 @Service 
-public class DBDataSourceConfig extends DataSource {
+public class DBDataSourceConfig  {
 	
 	//不建议使用
 //	@Autowired 

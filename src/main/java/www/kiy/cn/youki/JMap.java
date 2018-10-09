@@ -1,7 +1,8 @@
 package www.kiy.cn.youki;
 
-import java.util.HashMap;  
-public class JMap  extends  HashMap<String,Object> {
+import java.util.HashMap;
+import java.util.TreeMap;  
+public class JMap  extends  TreeMap<String,Object> {
 
 	/**
 	 * 

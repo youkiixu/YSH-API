@@ -8,8 +8,9 @@ import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import www.kiy.cn.HotKey.sqlType;
 import www.kiy.cn.dao.SystemDao;
-import www.kiy.cn.service.JdbcService;
+import www.kiy.cn.service.MssqlService;
 import www.kiy.cn.service.SystemService;
 import www.kiy.cn.youki.Convert;
 import www.kiy.cn.youki.JMap;
@@ -20,11 +21,11 @@ public class SystemServiceImpl implements SystemService {
 	private SystemDao systemDao;
 	
 	@Autowired
-	private JdbcService jdbcService;
+	private MssqlService mssql;
 	
 	@Override
 	public List<JMap> getDataTableByMethod(String strName) throws YSHException {
- 
+		
 		return getDataTableByMethod(strName, null);
 	}
 
@@ -58,22 +59,6 @@ public class SystemServiceImpl implements SystemService {
 	
 	@Override
 	public List<JMap> getDataTableByMethod(JMap config, String strName, JMap map) throws YSHException {
-	 //	List<List<JMap>> lst = systemDao.getSystemDataSetByName(strName);
-		
-//		DriverManagerDataSource dc= db.getMssQLDataSource("192.168.0.91", "SaaS", "dev", "dev");
-//		try {
-//			Connection cn= dc.getConnection();
-//			PreparedStatement par=cn.prepareStatement("select * from SysQueryMethod with(nolock) where strName=:strName "
-//					+ "select f.* from SysSqlFliter f with(nolock) inner join SysQueryMethod where s.strName=:strName ");
-//			
-//			par.close();
-//			
-//			cn.close();
-//			
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} 
 		@SuppressWarnings("unchecked")
 		List<JMap> mm =(List<JMap>) getDataTableBySystemDao( config,strName, map);
 		if (mm != null)
@@ -83,21 +68,35 @@ public class SystemServiceImpl implements SystemService {
 	}
 
 	public List<?> getDataTableBySystemDao(final JMap config,String strName, final JMap map) throws YSHException {
+		return getDataTableBySystemDao(config,strName,map,sqlType.Jdbc);
 		
-		List<List<JMap>> lst= systemDao.SysQueryAndFliter(strName);
-		System.out.println(lst);
+	}
+	/**
+	 * 参数统一使用@进行方便操作,为兼容.net 
+	 * 缺陷：strMethod 与strFrom 中对@处理不友好
+	 * 
+	 * @param config
+	 * @param strName
+	 * @param map
+	 * @param type
+	 * @return
+	 * @throws YSHException
+	 */
+	public List<?> getDataTableBySystemDao( JMap config,String strName, final JMap map,sqlType type) throws YSHException {
+	 
+		List<List<JMap>> lst= systemDao.sysQueryAndFliter(strName); 
 		if (lst == null || lst.get(0).size()==0)
 			throw new YSHException("找不到对应方法"); 
 		JMap SysQueryMethod =  lst.get(0).get(0);
 		
 		String strServerName=Convert.ToString( SysQueryMethod.get("strServerName"));
-		String strInstanceName = Convert.ToString(SysQueryMethod.get("strInstanceName"));
+	//	String strInstanceName = Convert.ToString(SysQueryMethod.get("strInstanceName"));
 		String strDBName = Convert.ToString(SysQueryMethod.get("strDBName"));
 		String strUserID = Convert.ToString(SysQueryMethod.get("strUserID"));
 		String strPassword = Convert.ToString(SysQueryMethod.get("strPassword"));
 		if(config!=null){
 			 strServerName=Convert.ToString( config.get("strServerName"));
-			 strInstanceName = Convert.ToString(config.get("strInstanceName"));
+			// strInstanceName = Convert.ToString(config.get("strInstanceName"));
 			 strDBName = Convert.ToString(config.get("strDBName"));
 			 strUserID = Convert.ToString(config.get("strUserID"));
 			 strPassword = Convert.ToString(config.get("strPassword"));
@@ -106,10 +105,7 @@ public class SystemServiceImpl implements SystemService {
 		String strMethod = SysQueryMethod.get("strMethod").toString();
 		String strGroupBy = SysQueryMethod.get("strGroupBy").toString();
 		String strFrom = SysQueryMethod.get("strFrom") == null ? "" : SysQueryMethod.get("strFrom").toString();
-
-		// if( !strCon.isEmpty()){
-
-		// }
+ 
 		StringBuilder str = new StringBuilder();
 
 		StringBuilder sql = new StringBuilder(String.format("%s %s", strMethod, strFrom));
@@ -120,18 +116,18 @@ public class SystemServiceImpl implements SystemService {
 			JMap tmp = iterator.next();
 			String strFliterParam = tmp.get("strFliterParam").toString();
 
-			String strColumn = String.valueOf(tmp.get("strColumn"));
+			String strColumn = Convert.ToString(tmp.get("strColumn"));
 			strColumn = strColumn == null ? "" : strColumn;
 
-			String strValue = String.valueOf(tmp.get("strValue"));
+			String strValue = Convert.ToString(tmp.get("strValue"));
 			strValue = strValue == null ? "" : strValue;
 
-			String strRule = String.valueOf(tmp.get("strRule"));
+			String strRule = Convert.ToString(tmp.get("strRule"));
 			strRule = strRule == null ? "" : strRule;
 
 			if (strFliterParam.toUpperCase().equals("FIX")) {
-				// 固定值
-				if (strRule.toUpperCase().contains("IN")) {
+				// 固定值  
+				if (strRule.toUpperCase().contains("IN")) { 
 					str.append(String.format(" %s %s (%s) ", strColumn, strRule, strValue));
 				} else {
 					str.append(strColumn).append(strRule).append(strValue);
@@ -139,57 +135,61 @@ public class SystemServiceImpl implements SystemService {
 				str.append(" and ");
 
 			} else {
-				boolean bIsNotNull = SysQueryMethod.get("bIsNotNull") == null ? false
-						: Boolean.valueOf(SysQueryMethod.get("bIsNotNull").toString());
-				String strFliterParam1 = strFliterParam;
-				if (strFliterParam1.contains("#{")) {
-					strFliterParam1 = strFliterParam1.replace("#{", "@").replace("}", "");
-				}
-
-				if (bIsNotNull) {
-
-					if (map == null
-							|| (!map.containsKey(strFliterParam) && !map.containsKey(strFliterParam.replace("@", "$"))))
+				
+				boolean bIsNotNull = Convert.ToBoolean( SysQueryMethod.get("bIsNotNull")); 
+				String strFliterParam2=strFliterParam;
+				String strFliterParam1 = strFliterParam.replace("@", "$");
+//				if (strFliterParam1.contains("#{")) {
+//					strFliterParam1 = strFliterParam1.replace("#{", "@").replace("}", "");
+//				}
+				//strFliterParam=@userId  strFliterParam1=$userId
+				if (bIsNotNull) {  
+					if (map == null || (!map.containsKey(strFliterParam) && !map.containsKey(strFliterParam1)))
 						throw new YSHException(String.format("关键参数%s必填", strFliterParam));
 				}
-				if (map != null && (map.containsKey(strFliterParam) || map.containsKey(strFliterParam.replace("@", "$"))
-						|| map.containsKey(strFliterParam.replace("#{", "$").replace("}", "")))) {
-					if (map.containsKey(strFliterParam)
-							&& String.valueOf(map.get(strFliterParam)).equals("undefined")) {
+				
+				if (map != null && (map.containsKey(strFliterParam) || map.containsKey(strFliterParam1) )) {
+					
+					//处理值 将 @变成:参数名 或 参数名
+					if (/*map.containsKey(strFliterParam) &&*/ Convert.ToString((map.get(strFliterParam))).equals("undefined")) {
 						map.remove(strFliterParam);
 						continue;
-					} else { 
-						if (map.containsKey(strFliterParam))
-							par.put(strFliterParam.replace("@", ""), map.get(strFliterParam));
-						else {
-							Object objVal_ = map.get(strFliterParam1);// ==
-																		// "undefined"
-							map.remove(strFliterParam1);
-							if (String.valueOf(objVal_) == "undefined") {
-								continue;
-							}
-							String key1 = strFliterParam.replace("$", ""); 
-							if (strFliterParam.contains("#")) {
-								key1 = strFliterParam.replace("#{", "").replace("}", "");
-							}
-							par.put(key1, map.get(strFliterParam));
-						}
-
+					}else if ( Convert.ToString(map.containsKey(strFliterParam1)).equals("undefined")) {
+						map.remove(strFliterParam1);
+						continue;
 					}
-					if (strFliterParam.startsWith("@"))
-						strFliterParam = String.format("%s}", strFliterParam.replace("@", "#{"));
-					else if (!strFliterParam.startsWith("#{"))
-						strFliterParam = String.format("#{%s}", strFliterParam);
-					if (strColumn == "")
+					else {
+						Object objVal; 
+						if(map.containsKey(strFliterParam))
+							objVal=map.getWithRemoveKey(strFliterParam);
+						else
+							objVal=map.getWithRemoveKey(strFliterParam1);
+						switch(type){ 
+						case Jdbc:
+							strFliterParam2 ="?"; 
+							break;
+						case JdbcTemplate: 
+							strFliterParam2=strFliterParam.replace("@",":");
+							par.put(strFliterParam.replace('@',':' ) , objVal);
+							break;
+						case mybatis:
+							strFliterParam2=String.format("#{%s}", strFliterParam.replace("@",""));
+							par.put( strFliterParam.replace("@",""), objVal);
+							break;
+						}
+					}
+					
+					 
+					if (strColumn.isEmpty())
 						str.append(String.format(" %s ", strValue));
 					else {
 						str.append(String.format(" %s ", strColumn));
 						if (strRule.toUpperCase() == "LIKE")
-							str.append(String.format(" like '%'+%s+'%'", strFliterParam));
+							str.append(String.format(" like '%'+%s+'%'", strFliterParam2));
 						else if (strRule.toUpperCase() == "LIKE%")
-							str.append(String.format(" like %s+'%'", strFliterParam));
+							str.append(String.format(" like %s+'%'", strFliterParam2));
 						else if (strRule.toUpperCase() == "%LIKE")
-							str.append(String.format(" '%'+like %s", strFliterParam));
+							str.append(String.format(" '%'+like %s", strFliterParam2));
 
 						else if (strRule.toUpperCase().contains("in")) {
 							if (!map.containsKey(strFliterParam))// 必须由内部数据统一过滤
@@ -198,7 +198,7 @@ public class SystemServiceImpl implements SystemService {
 									String.format(" %s (%s) ", strRule, strValue.replace("or", "").replace("=", "")));
 
 						} else {
-							str.append(String.format(" %s %s  ", strRule, strFliterParam));
+							str.append(String.format(" %s %s  ", strRule, strFliterParam2));
 						}
 					}
 					str.append(" and ");
@@ -248,17 +248,35 @@ public class SystemServiceImpl implements SystemService {
 			if (map.containsKey("$rowIndex")) {
 				rowIndex = map.getWithRemoveKey("$rowIndex");
 			} else {
-				if (!map.containsKey("@rowIndex"))
+				if (map.containsKey("@rowIndex"))
 					rowIndex = map.getWithRemoveKey("@rowIndex");
 			}
 			if (map.containsKey("$pageRecord")) {
 				pageRecord = map.getWithRemoveKey("$pageRecord");
 			} else {
-				if (!map.containsKey("@pageRecord"))
+				if (map.containsKey("@pageRecord"))
 					pageRecord = map.getWithRemoveKey("@pageRecord");
 			}
-			par.put("rowIndex", rowIndex);
-			par.put("pageRecord", pageRecord);
+			String sRowIndex="";
+			String sPageRecord="";
+			switch(type){ 
+			case Jdbc:
+				sRowIndex ="?"; 
+				sPageRecord="?";
+				break;
+			case JdbcTemplate:  
+				sRowIndex =":rowIndex"; 
+				sPageRecord=":pageRecord";
+				break;
+			case mybatis:
+				sRowIndex ="#{rowIndex}"; 
+				sPageRecord="#{pageRecord}";
+				break;
+			}
+			
+			
+			//par.put("rowIndex", rowIndex);
+			//par.put("pageRecord", pageRecord);
 			String sqlCount = "";
 			if (strFrom == null || strFrom.isEmpty()) {
 				int len = sql.toString().toUpperCase().lastIndexOf("FORM");
@@ -278,19 +296,21 @@ public class SystemServiceImpl implements SystemService {
 			strSysSql = String.format(
 					" select * from ( %s  %s %s) t where t.rowNum>=(#{rowIndex}-1)*convert(int,#{pageRecord})+1 and t.rowNum<=#{rowIndex}*convert(int,#{pageRecord}) \n %s",
 					sql.toString(), condition.toString(), strGroupBy, sqlCount);
-					// if (Boolean.valueOf(
-					// SysQueryMethod.get("bNonQuery").toString())){
-
-			// }else{
-
-			// }
+			if(sqlType.mybatis!=type){
+				strSysSql = strSysSql.replaceAll("#{rowIndex}", sRowIndex);
+				strSysSql = strSysSql.replaceAll("#{pageRecord}", sPageRecord);
+			}
+			
 		}
-		if (Convert.isNullOrEmpty(strServerName) ) {
-			par.put("strSysSqlKey", strSysSql);
-		  return systemDao.getDataByMethod(par);
-		} else { 
-			//  return jdbcService.exeReader(strCon, strSysSql, par);
-			return null;
+		System.out.println(strSysSql);
+		if (Convert.isNullOrEmpty(strServerName) ) {	
+			//系统级别
+			par.put("strSysSqlKey", strSysSql); 
+			return systemDao.getDataByMethod(par); 
+		} else {
+			//业务级别 
+			 //mssql.getDataByMethod(config, strSysSql, par);
+			return mssql.getDataByMethod(strServerName, strDBName, strUserID, strPassword, strSysSql, par);
 		}
 	}
 

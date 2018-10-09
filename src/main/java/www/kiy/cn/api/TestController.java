@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import www.kiy.cn.service.SaaSService;
 import www.kiy.cn.service.SystemService;
 import www.kiy.cn.service.TestService;
-import www.kiy.cn.youki.CacheInfo; 
+import www.kiy.cn.youki.CacheInfo;
+import www.kiy.cn.youki.JMap;
 import www.kiy.cn.youki.SetLog;
 import www.kiy.cn.youki.YSHException;
 
@@ -18,7 +20,7 @@ import www.kiy.cn.youki.YSHException;
 @RequestMapping("/tt")
 public class TestController {
 	@Autowired
-	private SystemService systemService;
+	private SaaSService saas;
 	
 	@Autowired
 	TestService testService;
@@ -30,7 +32,10 @@ public class TestController {
 		log.info("msg");
 		SetLog.logInfo("testAAAAAAAAAA");  
 		 try {
-			systemService.getDataTableByMethod("GetLogin");
+			//systemService.getDataTableByMethod("GetLogin");
+			 JMap map = new JMap();
+			 
+			 saas.getDataSetByMethod("YSH00000007", "GetLogin",map );
 		} catch (YSHException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

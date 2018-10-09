@@ -12,24 +12,15 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Service;
 
 import www.kiy.cn.configs.DBDataSourceConfig;
-import www.kiy.cn.service.ConnectPoolService;
+import www.kiy.cn.service.MssqlPoolService;
 import www.kiy.cn.youki.Convert;
 import www.kiy.cn.youki.SetLog;
 import www.kiy.cn.youki.YSHException;
 
 @Service 
-public class ConnectPoolServiceImpl implements ConnectPoolService {
+public class MssqlPoolServiceImpl implements MssqlPoolService {
 	
-	private String strServerName, strDBName, strUserID, strPassword;
-	
-	public ConnectPoolServiceImpl(){}
-	public ConnectPoolServiceImpl( String strServerName,String strDBName,String strUserID,String strPassword){
-		this.strServerName=strServerName;
-		this.strDBName = strDBName;
-		this.strUserID = strUserID;
-		this.strPassword= strPassword;
-		CheckPool(); 
-	}
+	private String strServerName, strDBName, strUserID, strPassword;  
 	/**
 	 * 
 	 * 注意pool.getConnection()，都是先从threadlocal里面拿的，如果threadlocal里面有，则用，保证线程里的多个dao操作，用的是同一个connection，以保证事务
@@ -46,9 +37,24 @@ public class ConnectPoolServiceImpl implements ConnectPoolService {
     private List<Connection> active= new Vector<Connection>();  
 
     // 将线程和连接绑定，保证事务能统一执行
-    private  ThreadLocal<Connection> threadLocal = new ThreadLocal<Connection>(); 
-    @Autowired
-    private DBDataSourceConfig db ;
+    private  ThreadLocal<Connection> threadLocal = new ThreadLocal<Connection>();  
+    
+	private DBDataSourceConfig db; 
+
+	@Autowired
+	public MssqlPoolServiceImpl(DBDataSourceConfig db) {
+		this.db= db;
+	}
+	
+	public MssqlPoolServiceImpl( String strServerName,String strDBName,String strUserID,String strPassword){
+		this.strServerName=strServerName; 
+		this.strDBName = strDBName;
+		this.strUserID = strUserID;
+		this.strPassword= strPassword;
+		CheckPool(); 
+		this.db= new  DBDataSourceConfig();
+	}
+	
     
 	
        
@@ -246,7 +252,7 @@ public class ConnectPoolServiceImpl implements ConnectPoolService {
 	 * @see www.kiy.cn.service.impl.ConnectPoolService#setDriverManager(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
 	@Override
-	public void setDriverManager(String strServerName, String strDBName, String getStrUserID, String strPassword) {
+	public void setDriverManager(String strServerName, String strDBName, String strUserID, String strPassword) {
 		this.strPassword = strPassword;
 		this.strDBName = strDBName;
 		this.strServerName = strServerName;

@@ -40,10 +40,9 @@ public class CacheInfo {
 	public JMap getMap(String key) {
 		if (!exits(key))
 			return null;
-		JMap map = this.valOpsMap.get(key);
-		//ValueOperations<String, JMap> operations = redisTemplate.opsForValue();
-		//JMap map = SetLog.ObjectToMap( operations.get(key));
-
+		//JMap map = this.valOpsMap.get(key);  
+		String json=  getString(key);
+		JMap map = SetLog.ObjectToMap(json); 
 		return map;
 	}
 

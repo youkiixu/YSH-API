@@ -59,7 +59,7 @@ public class HttpRequestHelp {
 		String res = null;
 		try {
 			if (Convert.isNullOrEmpty(ContentType))
-				ContentType = "application/json";
+				ContentType = "application/x-www-form-urlencoded";//application/x-www-form-urlencoded//application/json
 			URLConnection connection = CreateURLConnection(strUrl);
 			connection.setRequestProperty("Content-Type", ContentType);
 			// 发送POST请求必须设置如下两行

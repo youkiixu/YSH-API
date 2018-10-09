@@ -36,48 +36,48 @@ public class YSHController {
 	@RequestMapping("/Query")
 	public Object Query(HttpServletRequest req, HttpServletResponse rep) {
 		
-		
+		try{
 		JMap par = baseRequest.getRequestDataMap(req);
 
 		if (par == null || par.size() == 0) {
 			SetLog.Info("BaseRequest", "空数据");
 			return SetLog.writeMapError("空数据");
 		}
-		String appid = String.valueOf(par.get("appid"));
+		String appid =Convert.ToString(par.get("appid"));
 
-		String domain = String.valueOf(par.get("domain"));
+		String domain = Convert.ToString(par.get("domain"));
 		if (domain == null)
 			return SetLog.writeMapError("域名参数丢失");
 
 		// req.getRemoteAddr(); 影响整体性能禁用
 		String strSysMac = par.containsKey("strSysMac") ? par.get("strSysMac").toString() : req.getRemoteAddr();
 		// 测试使用
-		String sign1 = rsa.signData(SetLog.GetJSONString(par), strPrivateKey);
-		par.put("sign", sign1);
+		//String sign1 = rsa.signData(SetLog.GetJSONString(par), strPrivateKey);
+		//par.put("sign", sign1);
 
 		JMap configInfo = saas.getAppConfig(appid, domain);
 		if (configInfo.containsKey("errMsg"))
 			return configInfo;
-		if (!String.valueOf(configInfo.get("strSysMac")).equals(strSysMac))
+		if (!String.valueOf(configInfo.get("strMac")).equals(strSysMac))
 			return SetLog.writeMapError("无效Mac地址");
 		String strDomain = String.valueOf(configInfo.get("strDomain"));// yj.kiy.cn
-		String clientToken = String.valueOf(configInfo.get("clientToken"));
+		String clientToken =Convert.ToString(configInfo.get("clientToken"));
 
 		if (!strDomain.equals(domain))
 			return SetLog.writeMapError("无效域名");
 		// 通过域名下的文件获取strText
-		if (clientToken == null && !Boolean.parseBoolean(configInfo.get("bDebug").toString())) {
+		if (clientToken == null && !Convert.ToBoolean(configInfo.get("bDebug"))) {
 			String strScheme = String.valueOf(configInfo.get("strScheme"));
 			String strTxt = String.valueOf(configInfo.get("strTxt"));
-			String path = String.format("://%s/%s", strDomain, strTxt);// .txt应放在主站下
+			String path = String.format("%s://%s/%s",strScheme, strDomain, strTxt);// .txt应放在主站下
 			if (Convert.isNullOrEmpty(strScheme)) {
 				strScheme = "http";
 				clientToken = HttpRequestHelp.doGetRequest(path, null);
 				if (!clientToken.equals(strTxt)) {
 					strScheme = "https";
 					// .txt应放在主站下
-					clientToken = HttpRequestHelp.doGetRequest(String.format("://%s/%s", strDomain, strTxt), null);
-					if (!clientToken.equals(strTxt))
+					clientToken = HttpRequestHelp.doGetRequest(String.format("%s://%s/%s",strScheme, strDomain, strTxt), null);
+					if (!clientToken.equalsIgnoreCase(rsa.EncoderByMd5(Convert.ToString( configInfo.get("strPublicKey")))))
 						return SetLog.writeMapError("服务器URL请求无效");
 				}
 			}
@@ -88,8 +88,9 @@ public class YSHController {
 
 		}
 		String sign = par.getWithRemoveKey("sign").toString();
-
-		boolean bol = rsa.verifyData(SetLog.GetJSONString(par), sign, configInfo.get("strPublicKey").toString());
+		String json= SetLog.GetJSONString(par);
+		System.out.println(json);
+		boolean bol = rsa.verifyData(json, sign, configInfo.get("strPublicKey").toString());
 
 		if (!bol)
 			return SetLog.writeMapError("Sign 无效");
@@ -128,7 +129,10 @@ public class YSHController {
 			((JMap) obj).put("sign", rsa.signData(SetLog.GetJSONString(obj), strPrivateKey));
 		}
 		return obj;
-
+		}catch(Exception ex){
+			ex.printStackTrace();
+			return SetLog.writeMapError("内部运行错误");
+		}
 	}
 
 }

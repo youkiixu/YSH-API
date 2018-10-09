@@ -11,7 +11,7 @@ import www.kiy.cn.youki.JMap;
 @Mapper
 public interface SystemDao { 
 	
-	 List<List<JMap>> SysQueryAndFliter(@Param("strName") String strName);
+	 List<List<JMap>> sysQueryAndFliter(@Param("strName") String strName);
 
 	 @SelectProvider(type=SelectProviderDao.class,method="getDataTableBySystemDao")
 	 List<?> getDataByMethod(JMap map );

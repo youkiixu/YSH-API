@@ -22,7 +22,6 @@
 		<include refid="SysSqlFliterAllColumns" />
 		<include refid="SysQueryMethod" />
 		<include refid="SysSqlFliter" />
-		<where></where>
 	</select>
 
 	<select id="SysAppConfigInfo" resultType="www.kiy.cn.youki.JMap">
@@ -45,12 +44,18 @@
 	<!--####################### ResultType=JMap End####################### -->
 
 	<!--####################### ResultMap Start ####################### -->
-	<resultMap id="dynamic" type="www.kiy.cn.youki.JMap" />
-	<resultMap id="dynamic2" type="www.kiy.cn.youki.JMap" />
+	<resultMap id="dynamic" type="www.kiy.cn.youki.JMap">
+		<result property="uid" column="uid" />
+		<result property="strName" column="strName" />
+	</resultMap>
+	<resultMap id="dynamic2" type="www.kiy.cn.youki.JMap">
+		<result property="uid" column="uid" />
+		<result property="strName" column="strName" />
+	</resultMap>
 	<!--####################### ResultMap End####################### -->
 	<!--####################### ResultType=models Start####################### -->
 	<!-- resultMap="SysQueryMethod_M,SysSqlFliter_M" -->
-	<select id="SysQueryAndFliter" parameterType="www.kiy.cn.youki.JMap"
+	<select id="sysQueryAndFliter" parameterType="www.kiy.cn.youki.JMap"
 		resultMap="dynamic,dynamic2">
 		select * from
 		SysQueryMethod with(nolock) where strName=

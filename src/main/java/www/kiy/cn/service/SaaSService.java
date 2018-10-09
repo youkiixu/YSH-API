@@ -17,4 +17,6 @@ public interface SaaSService {
 
 	public List<JMap> getDataTableByMethod(String strAppid,String strMethod, JMap param) throws YSHException;
 
+	Object getSaaSData(String strAppid, JMap map, String type) throws YSHException;
+
 }
