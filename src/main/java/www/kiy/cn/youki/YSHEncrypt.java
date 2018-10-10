@@ -21,7 +21,6 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.IvParameterSpec;
  
-import org.junit.Test;
 
 import www.kiy.cn.HotKey.eRSAType; 
 /**
@@ -40,7 +39,7 @@ public class YSHEncrypt {
 	private KeyPair keyPair;  
 	public String signData(String data, String strPrivateKey) {
 
-		return signData(data, strPrivateKey, eRSAType.PrivateKey);
+		return signData(data, strPrivateKey, eRSAType.privateKey);
 	}
 
 	public String signData(String data, String strPrivateKey, eRSAType t) {
@@ -80,7 +79,7 @@ public class YSHEncrypt {
 	 * @return
 	 */
 	public JMap encode(String str, String strPrivateKey) {
-		return encode(str, strPrivateKey, eRSAType.PrivateKey);
+		return encode(str, strPrivateKey, eRSAType.privateKey);
 	}
 
 	public JMap encode(String str, String strKey, eRSAType t) {
@@ -97,68 +96,69 @@ public class YSHEncrypt {
 		return decode(str, strPublicKey, k, eRSAType.publicKey);
 	}
 
+	public String decode(JMap data, String strPublicKey) {
+		return decode( data,  strPublicKey,  eRSAType.publicKey);
+	}
+	public String decode( JMap data, String strKey, eRSAType t) {
+		return decode( data.getWithRemoveKey("d").toString(),  strKey,  data,  t);
+	}
 	public String decode(String str, String strKey, JMap k, eRSAType t) {
 		return Convert.ToString(DesCode(str, Cipher.DECRYPT_MODE, strKey, k, t));
 	}
     //private RSAPublicKey  publicKey;  
    // private RSAPrivateKey  privateKey;  
     
-    @Test
-	public void test() {
-
-		String privateKey = "MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBAKRZyzdQQ/Z8OxILFsJcDIvlkwG4ftRRwasW1ODRjcYz8AC987kyZF0Vqh/CxdbfnYVg2kwwA/8Styoxu3ZtZ+dyuw4PQl/liP/tSWONAD9lvdQ+yU87Tciwm/TLUHIAERbdVgCJr6PTaHAG17FrwhCZ3vtU+yJrT5QYU7ku7utzAgEDAoGAG2RMiTgLU79fLayDyw9XbKZDKvQVI2L1nIPOJXhCS7NSqspTSYhmD4OcWqB2TnqaQOV5t11V/9hz3F2fPmeRUPlqWFKhHFlyGsiMMqWcWgbLwsU+royhTiPJ7jHtwVMALKE/Zyl5bmauX4fuGaRGyz57mpcrr/1PujlAtvcxYNMCQQDNWwVUM+mgKjTLMVgi9bwAUyO5opXMd9RtscclSAVAVSVBKDuVoEwDahIrwUXNNqvLo2mdwPF/V+4epmHEBfmZAkEAzOH2y0fMLLIqbs7biGBnPKQf5a6iIw4fbC6YenXkzbrl1LFZ+zbBZ+ggq4HRxOKhV1XyLDQQ/BlIoikNn8Cs6wJBAIjnWOLNRmrGzdzLkBdOfVWMwnvBuTL6jZ52hMOFWNWOGNYa0mPAMqzxYXKA2TN5x90Xm76AoP+P9BRu69gD+7sCQQCIlqSHhTLIdsb0ieewQETTGBVDycFstBTyybr8TpiJJ0PjIOanedZFRWsdATaDQcDk4/bIIrX9ZjBsG15qgHNHAkAjk8Y1kCNRjixxKwPJzh8xaWMsAQQvmGzEKGrw7m8xLkxDLMlWs1dkG3NIhFW1cdJHaZMURkbwdtkVPsY6hnh8";
-		String publicKey = "MIGdMA0GCSqGSIb3DQEBAQUAA4GLADCBhwKBgQCkWcs3UEP2fDsSCxbCXAyL5ZMBuH7UUcGrFtTg0Y3GM/AAvfO5MmRdFaofwsXW352FYNpMMAP/ErcqMbt2bWfncrsOD0Jf5Yj/7UljjQA/Zb3UPslPO03IsJv0y1ByABEW3VYAia+j02hwBtexa8IQmd77VPsia0+UGFO5Lu7rcwIBAw==";
-		 
-		// rsa.CreateKey();
-		//
-		//  privateKey = rsa.getPrivateKey();
-		//  publicKey = rsa.getPublicKey();
-		//rsa.setPublicKey(publicKey);
-		//rsa.setPrivateKey(privateKey);
-		//{"key":"111SaaSQRQuery","domain":"www.kiy.cn:443","strSysMac":"30-5A-3A-E4-4F-14","out_trade_no":"a201809291713391661009564198","sign":""}
-		JMap map = new JMap();
-		map.put("key", "SaaSQRQuery");
-		map.put("domain", "www.kiy.cn:443");
-		map.put("strSysMac", "30-5A-3A-E4-4F-14");
-		map.put("out_trade_no6", "a201809291713391661009564198"); 
-		map.put("out_trade_no7", "a201809291713391661009564198"); 
-		map.put("out_trade_no6", "a201809291713391661009564198"); 
-		map.put("out_trade_no1", "a201809291713391661009564198"); 
-		map.put("out_trade_no2", "a201809291713391661009564198"); 
-		map.put("out_trade_no3", "a201809291713391661009564198"); 
-		map.put("out_trade_no4", "a201809291713391661009564198"); 
-		map.put("out_trade_no5", "a201809291713391661009564198"); 
-		map.put("out_trade_no6", "a201809291713391661009564198"); 
-		map.put("out_trade_no7", "a201809291713391661009564198");
-		map.put("out_trade_no8", "a201809291713391661009564198");
-		
-		String str =SetLog.GetJSONString(map);
-//		String sign=this.signData(str, privateKey);
+//    @Test
+//	public void test() {
+//
+//		String privateKey = "MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBAKRZyzdQQ/Z8OxILFsJcDIvlkwG4ftRRwasW1ODRjcYz8AC987kyZF0Vqh/CxdbfnYVg2kwwA/8Styoxu3ZtZ+dyuw4PQl/liP/tSWONAD9lvdQ+yU87Tciwm/TLUHIAERbdVgCJr6PTaHAG17FrwhCZ3vtU+yJrT5QYU7ku7utzAgEDAoGAG2RMiTgLU79fLayDyw9XbKZDKvQVI2L1nIPOJXhCS7NSqspTSYhmD4OcWqB2TnqaQOV5t11V/9hz3F2fPmeRUPlqWFKhHFlyGsiMMqWcWgbLwsU+royhTiPJ7jHtwVMALKE/Zyl5bmauX4fuGaRGyz57mpcrr/1PujlAtvcxYNMCQQDNWwVUM+mgKjTLMVgi9bwAUyO5opXMd9RtscclSAVAVSVBKDuVoEwDahIrwUXNNqvLo2mdwPF/V+4epmHEBfmZAkEAzOH2y0fMLLIqbs7biGBnPKQf5a6iIw4fbC6YenXkzbrl1LFZ+zbBZ+ggq4HRxOKhV1XyLDQQ/BlIoikNn8Cs6wJBAIjnWOLNRmrGzdzLkBdOfVWMwnvBuTL6jZ52hMOFWNWOGNYa0mPAMqzxYXKA2TN5x90Xm76AoP+P9BRu69gD+7sCQQCIlqSHhTLIdsb0ieewQETTGBVDycFstBTyybr8TpiJJ0PjIOanedZFRWsdATaDQcDk4/bIIrX9ZjBsG15qgHNHAkAjk8Y1kCNRjixxKwPJzh8xaWMsAQQvmGzEKGrw7m8xLkxDLMlWs1dkG3NIhFW1cdJHaZMURkbwdtkVPsY6hnh8";
+//		String publicKey = "MIGdMA0GCSqGSIb3DQEBAQUAA4GLADCBhwKBgQCkWcs3UEP2fDsSCxbCXAyL5ZMBuH7UUcGrFtTg0Y3GM/AAvfO5MmRdFaofwsXW352FYNpMMAP/ErcqMbt2bWfncrsOD0Jf5Yj/7UljjQA/Zb3UPslPO03IsJv0y1ByABEW3VYAia+j02hwBtexa8IQmd77VPsia0+UGFO5Lu7rcwIBAw==";
+//		 
+//		// rsa.CreateKey();
+//		//
+//		//  privateKey = rsa.getPrivateKey();
+//		//  publicKey = rsa.getPublicKey();
+//		//rsa.setPublicKey(publicKey);
+//		//rsa.setPrivateKey(privateKey);
+//		//{"key":"111SaaSQRQuery","domain":"www.kiy.cn:443","strSysMac":"30-5A-3A-E4-4F-14","out_trade_no":"a201809291713391661009564198","sign":""}
+//		JMap map = new JMap();
+//		map.put("key", "SaaSQRQuery");
+//		map.put("domain", "www.kiy.cn:443");
+//		map.put("strSysMac", "30-5A-3A-E4-4F-14");
+//		map.put("out_trade_no6", "a201809291713391661009564198"); 
+//		map.put("out_trade_no7", "a201809291713391661009564198"); 
+//		map.put("out_trade_no6", "a201809291713391661009564198"); 
+//		map.put("out_trade_no1", "a201809291713391661009564198"); 
+//		map.put("out_trade_no2", "a201809291713391661009564198"); 
+//		map.put("out_trade_no3", "a201809291713391661009564198"); 
+//		map.put("out_trade_no4", "a201809291713391661009564198"); 
+//		map.put("out_trade_no5", "a201809291713391661009564198"); 
+//		map.put("out_trade_no6", "a201809291713391661009564198"); 
+//		map.put("out_trade_no7", "a201809291713391661009564198");
+//		map.put("out_trade_no8", "a201809291713391661009564198");
 //		
-//		System.out.println(sign);
-//		JMap mm = new JMap();
-//		mm.put("privateKey" , sign);
-//		mm.put("publicKey" , this.signData(str, publicKey,eRSAType.publicKey) );
-//		JMap m =  HttpRequestHelp.doPost("http://localhost:9898/", mm); 
-//		String sign1= Convert.ToString(  m.get("sign"));
-//		System.out.println(this.verifyData(sign1, privateKey,eRSAType.PrivateKey));
-		
-		//String dd= this.verifyData(sign, privateKey,eRSAType.PrivateKey);
-		  
-		
+//		String str =SetLog.GetJSONString(map);
+////		String sign=this.signData(str, privateKey);
+////		
+////		System.out.println(sign);
+////		JMap mm = new JMap();
+////		mm.put("privateKey" , sign);
+////		mm.put("publicKey" , this.signData(str, publicKey,eRSAType.publicKey) );
+////		JMap m =  HttpRequestHelp.doPost("http://localhost:9898/", mm); 
+////		String sign1= Convert.ToString(  m.get("sign"));
+////		System.out.println(this.verifyData(sign1, privateKey,eRSAType.PrivateKey));
 //		
-		JMap mm=this.encode(str, publicKey,eRSAType.publicKey);
-	//	String encode= mm.get("data").toString();
-		
-		HttpRequestHelp.doPost("http://localhost:9898/", mm); 
-		
-//		System.out.println(encode.length());
-//		System.out.println(mm);
-		
-		//String decode= this.decode(encode, privateKey, mm,eRSAType.PrivateKey);
-		
-	//	 System.out.println(decode); 
-	}
+//		//String dd= this.verifyData(sign, privateKey,eRSAType.PrivateKey);
+//		  
+//		
+////		
+//		JMap mm=this.encode(str, publicKey,eRSAType.publicKey);
+//		String d= this.decode(mm.get("d").toString(), privateKey, mm, eRSAType.privateKey);
+//		System.out.println(d); 
+//		
+//		JMap m =  HttpRequestHelp.doPost("http://localhost:9898/", mm);  
+//		System.out.println(  this.decode(m, privateKey, eRSAType.privateKey)); 
+//	}
 	
 	 
 	
@@ -167,7 +167,7 @@ public class YSHEncrypt {
 		try {
 			KeyFactory keyFactory = getKeyFactory();
 			Key k = null; 
-			if (rsa == eRSAType.PrivateKey)
+			if (rsa == eRSAType.privateKey)
 				k = keyFactory.generatePrivate(getPKCS8EncodedKeySpec(strKey));
 			else
 				k = keyFactory.generatePublic(getX509EncodedKeySpec(strKey));
@@ -304,14 +304,15 @@ public class YSHEncrypt {
 				}
 
 			} else {
-			//	byte[] sik =Convert.ToBase64Byte(Convert.ToString(k.get("k")));
-				//byte[] siv =Convert.ToBase64Byte(Convert.ToString(k.get("v")));
+				byte[] sik = Convert.ToBase64Byte(Convert.ToString(k.get("k")));
+				byte[] siv = Convert.ToBase64Byte(Convert.ToString(k.get("v")));
+				// bkey = this.verifyData(sik, strKey, t);
+				// biv = this.verifyData(siv, strKey, t);
+				// Data(Convert.ToString( k.get("k")),;
 				
-				//bkey = this.verifyData(sik, strKey, t);
-				//biv = this.verifyData(siv, strKey, t);
-			//	Data(Convert.ToString(  k.get("k")),;
-				
-				
+				///Convert.ToBase64String(bkey).getBytes("utf-8") 
+				bkey = Convert.ToBase64Byte(   new String (Data(sik, strKey, MODE, t),"utf-8"));
+				biv =  Convert.ToBase64Byte(new String ( Data(siv, strKey, MODE, t),"utf-8"));
 			}
 			DESKeySpec kspec = new DESKeySpec(bkey);// 设置密钥参数
 			IvParameterSpec iv1 = new IvParameterSpec(biv);// 设置向量
@@ -323,11 +324,12 @@ public class YSHEncrypt {
 			if (MODE == Cipher.ENCRYPT_MODE) {
 				byte[] pasByte = cipher.doFinal(str.getBytes("utf-8"));
 
-				if (!Convert.isNullOrEmpty(strKey)) {
-					//result.put("k",new String( Convert.ToBase64Byte(this.signData(new String(bkey, "utf-8"), strKey, t)),"utf-8"));
-					//result.put("v",new String( Convert.ToBase64Byte( this.signData(new String(biv, "utf-8"), strKey, t)),"utf-8"));
-					result.put("k",Convert.ToBase64String( Data(bkey, strKey, Cipher.DECRYPT_MODE, t)));
-					result.put("k",Convert.ToBase64String(Data(biv, strKey, Cipher.DECRYPT_MODE, t))); 
+				if (!Convert.isNullOrEmpty(strKey)) { 
+					//由于.net中不是所有的byte[]转string 后还能再转回同样的byte[],故加多64加密
+					result.put("k",Convert.ToBase64String( Data(Convert.ToBase64String(bkey).getBytes("utf-8")  , strKey, MODE, t)));
+					result.put("v",Convert.ToBase64String(Data( Convert.ToBase64String(biv).getBytes("utf-8"),strKey , MODE, t)));
+					//result.put("k",Convert.ToBase64String( Data(   bkey, strKey, MODE, t)));
+					//result.put("v",Convert.ToBase64String(Data(biv, strKey, MODE, t))); 
 				}
 				result.put("d", Convert.ToBase64String(pasByte));
 				return result;

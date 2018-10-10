@@ -40,6 +40,6 @@ public class HotKey {
    *
    */
   public enum eRSAType{
-		PrivateKey, publicKey
+		privateKey, publicKey
 	}
 }
