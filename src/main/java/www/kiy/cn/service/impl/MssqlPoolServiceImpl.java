@@ -169,7 +169,8 @@ public class MssqlPoolServiceImpl implements MssqlPoolService {
 	 */
 	@Override
 	public void CheckPool() {
-		new Timer().schedule(new TimerTask() {
+		//设定指定任务task在指定延迟delay后进行固定延迟peroid的执行  
+		new Timer().scheduleAtFixedRate(new TimerTask() {
 
 			@Override
 			public void run() {
@@ -180,7 +181,7 @@ public class MssqlPoolServiceImpl implements MssqlPoolService {
 				System.out.println("活动连接数：：" + active.size());
 				System.out.println("总的连接数：" + maxActive);
 			}
-		}, 1000 * 60 * 5);
+		},0, 1000 * 60 * 5);//5分钟跑一次
 	}
 	
 	/* (non-Javadoc)

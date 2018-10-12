@@ -14,17 +14,15 @@ public interface MssqlService {
 
 //	Connection getMssqlConnection(String strServerName, String strInstanceName, String strDBName, String strUserID,
 //			String strPassword) throws YSHException;
+ 
+ 
 
-	List<List<JMap>> getDataSetByMethod(JMap config, String strSql, JMap param) throws Exception;
+	List<?> getDataTableByMethod(JMap config, String strSql, JMap param) throws Exception;
 
-	List<JMap> getDataTableByMethod(JMap config, String strSql, JMap param) throws Exception;
-
-	List<?> getDataByMethod(JMap config, String strSql, JMap param) throws Exception;
-
-	List<?> getDataByMethod(String strServerName, String strDBName, String strUserID, String strPassword,
+	List<?> getDataTableByMethod(String strServerName, String strDBName, String strUserID, String strPassword,
 			String strSql, JMap param) throws Exception;
 
-//	List<?> getDataByMethod(String strServerName, String strInstanceName, String strDBName, String strUserID,
-//			String strPassword, String strSql, JMap param) throws YSHException; 
-
+	List<?> getDataByMethod(String strServerName, String strDBName, String strUserID, String strPassword, String strSql,
+			String strSqlCount, JMap param) throws Exception;
+ 
 }

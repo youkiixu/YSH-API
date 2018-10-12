@@ -19,4 +19,5 @@ public interface TestDao {
 	@Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "Id")
 	@Insert("insert into tblB values(#{a},#{idA})")//参数
 	int tbSaveTestB(JMap map);
+	
 }

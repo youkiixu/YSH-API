@@ -47,7 +47,8 @@ public class TestController {
 //				}
 //			 
 			   JMap map = new JMap();  
-			   saas.getDataSetByMethod("YSH00000007", "GetProductComments",map);
+			 //  map.put("@IsHidden",0);
+			 System.out.println("data="+saas.getDataSetByMethod("YSH00000007", "GetProductComments",map));
 			   
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
