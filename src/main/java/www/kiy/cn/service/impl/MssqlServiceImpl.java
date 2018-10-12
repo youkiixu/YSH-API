@@ -11,8 +11,7 @@ import org.springframework.stereotype.Service;
 import www.kiy.cn.service.MssqlPoolService;
 import www.kiy.cn.service.MssqlService;
 import www.kiy.cn.youki.Convert;
-import www.kiy.cn.youki.JMap;
-import www.kiy.cn.youki.YSHException;
+import www.kiy.cn.youki.JMap; 
 
 @Service
 public class MssqlServiceImpl implements MssqlService {
@@ -22,7 +21,7 @@ public class MssqlServiceImpl implements MssqlService {
 	private Map<String, MssqlPoolService> cons = new HashMap<String, MssqlPoolService>();
 	
 	@Override
-	public Connection getMssqlConnection(JMap config) throws YSHException {
+	public Connection getMssqlConnection(JMap config) throws Exception {
 		// 暂时没有使用mysql 先稳定一版后再优化使用mysql
 		// strInstanceName
 
@@ -33,7 +32,7 @@ public class MssqlServiceImpl implements MssqlService {
 
 	@Override
 	public Connection getMssqlConnection(String strServerName, String strDBName, String strUserID, String strPassword)
-			throws YSHException {
+			throws Exception {
 
 		if (strUserID == null) {
 			strUserID = "";
@@ -48,25 +47,25 @@ public class MssqlServiceImpl implements MssqlService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<List<JMap>> getDataSetByMethod(JMap config, String strSql, JMap param) throws YSHException {
+	public List<List<JMap>> getDataSetByMethod(JMap config, String strSql, JMap param) throws Exception {
 		return (List<List<JMap>>) getDataByMethod(config, strSql, param);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<JMap> getDataTableByMethod(JMap config, String strSql, JMap param) throws YSHException {
+	public List<JMap> getDataTableByMethod(JMap config, String strSql, JMap param) throws Exception {
 		return (List<JMap>) getDataByMethod(config, strSql, param);
 	}
 
 	@Override
-	public List<?> getDataByMethod(JMap config, String strSql, JMap param) throws YSHException {
+	public List<?> getDataByMethod(JMap config, String strSql, JMap param) throws Exception {
 		return getDataByMethod(Convert.ToString(config.get("strServerName")), Convert.ToString(config.get("strDBName")),
 				Convert.ToString(config.get("strUserID")), Convert.ToString(config.get("strPassword")), strSql, param);
 	}
 
 	@Override
 	public List<?> getDataByMethod(String strServerName, String strDBName, String strUserID, String strPassword,
-			String strSql, JMap param) throws YSHException {
+			String strSql, JMap param) throws Exception {
 
 		MssqlPoolService poolService = getConnectPoolService(strServerName, strDBName, strUserID, strPassword);
 		 poolService.getDriverManagerDataSource();
@@ -79,7 +78,7 @@ public class MssqlServiceImpl implements MssqlService {
 	}
 
 	private MssqlPoolService getConnectPoolService(String strServerName, String strDBName, String strUserID,
-			String strPassword) throws YSHException {
+			String strPassword) throws Exception {
 
 		String key = String.format("%s%s%s%s", strServerName, strDBName, strUserID, strPassword);
 		MssqlPoolService poolService;

@@ -1,8 +1,7 @@
 package www.kiy.cn.youki;
  
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.IOException; 
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -21,9 +20,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.IvParameterSpec;
-
-import org.apache.tomcat.util.codec.binary.Base64;
-import org.junit.Test; 
+ 
+//import org.junit.Test; 
 /**
  * 
  * 兼容.net
@@ -37,40 +35,40 @@ public class RSA {
     private RSAPublicKey  publicKey;  
     private RSAPrivateKey  privateKey;  
     
-    @Test
-	public void test() {
-
-		String privateKey = "MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBAKRZyzdQQ/Z8OxILFsJcDIvlkwG4ftRRwasW1ODRjcYz8AC987kyZF0Vqh/CxdbfnYVg2kwwA/8Styoxu3ZtZ+dyuw4PQl/liP/tSWONAD9lvdQ+yU87Tciwm/TLUHIAERbdVgCJr6PTaHAG17FrwhCZ3vtU+yJrT5QYU7ku7utzAgEDAoGAG2RMiTgLU79fLayDyw9XbKZDKvQVI2L1nIPOJXhCS7NSqspTSYhmD4OcWqB2TnqaQOV5t11V/9hz3F2fPmeRUPlqWFKhHFlyGsiMMqWcWgbLwsU+royhTiPJ7jHtwVMALKE/Zyl5bmauX4fuGaRGyz57mpcrr/1PujlAtvcxYNMCQQDNWwVUM+mgKjTLMVgi9bwAUyO5opXMd9RtscclSAVAVSVBKDuVoEwDahIrwUXNNqvLo2mdwPF/V+4epmHEBfmZAkEAzOH2y0fMLLIqbs7biGBnPKQf5a6iIw4fbC6YenXkzbrl1LFZ+zbBZ+ggq4HRxOKhV1XyLDQQ/BlIoikNn8Cs6wJBAIjnWOLNRmrGzdzLkBdOfVWMwnvBuTL6jZ52hMOFWNWOGNYa0mPAMqzxYXKA2TN5x90Xm76AoP+P9BRu69gD+7sCQQCIlqSHhTLIdsb0ieewQETTGBVDycFstBTyybr8TpiJJ0PjIOanedZFRWsdATaDQcDk4/bIIrX9ZjBsG15qgHNHAkAjk8Y1kCNRjixxKwPJzh8xaWMsAQQvmGzEKGrw7m8xLkxDLMlWs1dkG3NIhFW1cdJHaZMURkbwdtkVPsY6hnh8";
-		String publicKey = "MIGdMA0GCSqGSIb3DQEBAQUAA4GLADCBhwKBgQCkWcs3UEP2fDsSCxbCXAyL5ZMBuH7UUcGrFtTg0Y3GM/AAvfO5MmRdFaofwsXW352FYNpMMAP/ErcqMbt2bWfncrsOD0Jf5Yj/7UljjQA/Zb3UPslPO03IsJv0y1ByABEW3VYAia+j02hwBtexa8IQmd77VPsia0+UGFO5Lu7rcwIBAw==";
-		RSA rsa = new RSA();
-		// rsa.CreateKey();
-		//
-		//  privateKey = rsa.getPrivateKey();
-		//  publicKey = rsa.getPublicKey();
-		//rsa.setPublicKey(publicKey);
-		//rsa.setPrivateKey(privateKey);
-		//{"key":"111SaaSQRQuery","domain":"www.kiy.cn:443","strSysMac":"30-5A-3A-E4-4F-14","out_trade_no":"a201809291713391661009564198","sign":""}
-		JMap map = new JMap();
-		map.put("key", "SaaSQRQuery");
-		map.put("domain", "www.kiy.cn:443");
-		map.put("strSysMac", "30-5A-3A-E4-4F-14");
-		map.put("out_trade_no6", "a201809291713391661009564198"); 
-		map.put("out_trade_no7", "a201809291713391661009564198"); 
-		map.put("out_trade_no6", "a201809291713391661009564198"); 
-		map.put("out_trade_no7", "a201809291713391661009564198"); 
-		String str =SetLog.GetJSONString(map);
-		JMap mm=this.encode(str, privateKey);
-		String encode= mm.get("data").toString();
-		
-	//	HttpRequestHelp.doPost("http://localhost:9898/", mm); 
-		
-		System.out.println(encode.length());
-		System.out.println(mm);
-		
-		String decode= this.decode(encode, publicKey, mm);
-		
-		 System.out.println(decode); 
-	}
+//    @Test
+//	public void test() {
+//
+//		String privateKey = "MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBAKRZyzdQQ/Z8OxILFsJcDIvlkwG4ftRRwasW1ODRjcYz8AC987kyZF0Vqh/CxdbfnYVg2kwwA/8Styoxu3ZtZ+dyuw4PQl/liP/tSWONAD9lvdQ+yU87Tciwm/TLUHIAERbdVgCJr6PTaHAG17FrwhCZ3vtU+yJrT5QYU7ku7utzAgEDAoGAG2RMiTgLU79fLayDyw9XbKZDKvQVI2L1nIPOJXhCS7NSqspTSYhmD4OcWqB2TnqaQOV5t11V/9hz3F2fPmeRUPlqWFKhHFlyGsiMMqWcWgbLwsU+royhTiPJ7jHtwVMALKE/Zyl5bmauX4fuGaRGyz57mpcrr/1PujlAtvcxYNMCQQDNWwVUM+mgKjTLMVgi9bwAUyO5opXMd9RtscclSAVAVSVBKDuVoEwDahIrwUXNNqvLo2mdwPF/V+4epmHEBfmZAkEAzOH2y0fMLLIqbs7biGBnPKQf5a6iIw4fbC6YenXkzbrl1LFZ+zbBZ+ggq4HRxOKhV1XyLDQQ/BlIoikNn8Cs6wJBAIjnWOLNRmrGzdzLkBdOfVWMwnvBuTL6jZ52hMOFWNWOGNYa0mPAMqzxYXKA2TN5x90Xm76AoP+P9BRu69gD+7sCQQCIlqSHhTLIdsb0ieewQETTGBVDycFstBTyybr8TpiJJ0PjIOanedZFRWsdATaDQcDk4/bIIrX9ZjBsG15qgHNHAkAjk8Y1kCNRjixxKwPJzh8xaWMsAQQvmGzEKGrw7m8xLkxDLMlWs1dkG3NIhFW1cdJHaZMURkbwdtkVPsY6hnh8";
+//		String publicKey = "MIGdMA0GCSqGSIb3DQEBAQUAA4GLADCBhwKBgQCkWcs3UEP2fDsSCxbCXAyL5ZMBuH7UUcGrFtTg0Y3GM/AAvfO5MmRdFaofwsXW352FYNpMMAP/ErcqMbt2bWfncrsOD0Jf5Yj/7UljjQA/Zb3UPslPO03IsJv0y1ByABEW3VYAia+j02hwBtexa8IQmd77VPsia0+UGFO5Lu7rcwIBAw==";
+//		RSA rsa = new RSA();
+//		// rsa.CreateKey();
+//		//
+//		//  privateKey = rsa.getPrivateKey();
+//		//  publicKey = rsa.getPublicKey();
+//		//rsa.setPublicKey(publicKey);
+//		//rsa.setPrivateKey(privateKey);
+//		//{"key":"111SaaSQRQuery","domain":"www.kiy.cn:443","strSysMac":"30-5A-3A-E4-4F-14","out_trade_no":"a201809291713391661009564198","sign":""}
+//		JMap map = new JMap();
+//		map.put("key", "SaaSQRQuery");
+//		map.put("domain", "www.kiy.cn:443");
+//		map.put("strSysMac", "30-5A-3A-E4-4F-14");
+//		map.put("out_trade_no6", "a201809291713391661009564198"); 
+//		map.put("out_trade_no7", "a201809291713391661009564198"); 
+//		map.put("out_trade_no6", "a201809291713391661009564198"); 
+//		map.put("out_trade_no7", "a201809291713391661009564198"); 
+//		String str =SetLog.GetJSONString(map);
+//		JMap mm=this.encode(str, privateKey);
+//		String encode= mm.get("data").toString();
+//		
+//	//	HttpRequestHelp.doPost("http://localhost:9898/", mm); 
+//		
+//		System.out.println(encode.length());
+//		System.out.println(mm);
+//		
+//		String decode= this.decode(encode, publicKey, mm);
+//		
+//		 System.out.println(decode); 
+//	}
 	
 	/**
 	 * 生成秘钥对

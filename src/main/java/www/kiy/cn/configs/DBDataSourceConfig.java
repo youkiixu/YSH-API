@@ -9,8 +9,7 @@ import org.mybatis.spring.SqlSessionFactoryBean;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Service;
 
-import www.kiy.cn.youki.Convert;
-import www.kiy.cn.youki.YSHException; 
+import www.kiy.cn.youki.Convert; 
 @Service 
 public class DBDataSourceConfig  {
 	
@@ -24,13 +23,13 @@ public class DBDataSourceConfig  {
 		
 	}*/
 	public DriverManagerDataSource getMssQLDataSource(String strServerName, String strDBName, String strUserName,
-			String strPassword) throws YSHException {
+			String strPassword) throws Exception {
 
 		return getMssQLDataSource(strServerName, "MSSQLSERVER", strDBName, strUserName, strPassword);
 	}
 
 	public DriverManagerDataSource getMssQLDataSource(String strServerName, String strInstanceName, String strDBName,
-			String strUser, String strPassword) throws YSHException {
+			String strUser, String strPassword) throws Exception {
 
 		if (strInstanceName == null || strInstanceName.isEmpty())
 			strInstanceName = "MSSQLSERVER";
@@ -49,11 +48,11 @@ public class DBDataSourceConfig  {
 	}
 
 	public DriverManagerDataSource getDataSource(String strDriverClass, String strJdbcUrl, String strUser,
-			String strPassword) throws YSHException {
+			String strPassword) throws Exception {
 		if (strDriverClass == null)
 			strDriverClass = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 		if (strJdbcUrl == null || strJdbcUrl.isEmpty())
-			throw new YSHException("JdbcUrl 不正确");
+			throw new Exception("JdbcUrl 不正确");
 
 		String key = String.format("%s%s%s", strJdbcUrl, strUser, strPassword);
 		if (cacheInfo.containsKey(key)) {
@@ -76,7 +75,7 @@ public class DBDataSourceConfig  {
 	}
 
 	public String getMssqlDatabaseId(String strServerName, String strDBName, String strUser, String strPassword)
-			throws YSHException, SQLException {
+			throws Exception {
 
 		String strJdbcUrl = Convert.ToMssqlJdbcUrl(strServerName, strDBName);
 		DriverManagerDataSource dataSource = getDataSource(null, strJdbcUrl, strUser, strPassword);

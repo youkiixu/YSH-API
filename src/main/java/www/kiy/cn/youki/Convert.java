@@ -1,5 +1,9 @@
 package www.kiy.cn.youki;
 
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.apache.tomcat.util.codec.binary.Base64;
 
 public class Convert {
@@ -46,6 +50,22 @@ public class Convert {
 		if(data==null)
 			return null;
 		return Base64.decodeBase64(data);
+	}
+	
+	public String getDateString() {
+
+		return getDate(new Date(), "yyyy-MM-dd");
+	}
+
+	public String getFullDateString() {
+		return getDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS");
+	}
+
+	public String getDate(Date curDate, String strFormat) {
+		SimpleDateFormat format = new SimpleDateFormat(strFormat);
+
+		return format.format(curDate);
+
 	}
 
 }

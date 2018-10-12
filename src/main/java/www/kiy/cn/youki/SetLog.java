@@ -2,9 +2,8 @@ package www.kiy.cn.youki;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List; 
+import java.text.SimpleDateFormat; 
+import java.util.Date; 
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +52,8 @@ public class SetLog {
 	public static String GetJSONString(Object json) {
 
 		try {
+			if(json.getClass().getName().equals("java.lang.String"))
+				return json.toString();
 			if (json != null)
 				return MapJson.getMapper().writeValueAsString(json);
 
@@ -66,10 +67,9 @@ public class SetLog {
 
 		return (JMap) ObjectToObject(json, JMap.class);
 	}
-
-	@SuppressWarnings("unchecked")
-	public static List<JMap> ObjectToListMap(Object json) {
-		return (List<JMap>) ObjectToObject(json, List.class);
+ 
+	public static ListMap ObjectToListMap(Object json) {
+		return (ListMap) ObjectToObject(json, ListMap.class);
 
 	}
 

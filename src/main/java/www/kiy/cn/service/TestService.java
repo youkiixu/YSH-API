@@ -5,7 +5,7 @@ import www.kiy.cn.youki.JMap;
 public interface TestService {
 	
 	
-	JMap tbSaveTest();
+	JMap tbSaveTest(JMap dd);
 	
 	
 }

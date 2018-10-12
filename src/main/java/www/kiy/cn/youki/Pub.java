@@ -1,7 +1,11 @@
 package www.kiy.cn.youki;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -9,8 +13,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.springframework.context.ApplicationContext;
+
 public class Pub {
+	private static final Pub pub = new Pub();
+	
+	public  static Pub getInstance(){
+		return pub;
+	}
+	
 	private final JMap InstanceMap = new JMap();
+	private final JMap InstanceObjMap = new JMap();
 	private final JMap InstanceMethodMap = new JMap();
 	
 	public List<String> getClassName(String packageName) {
@@ -63,12 +76,13 @@ public class Pub {
 		return null;
 	}
 
-	public Object InvokeMethod(String strPackage, String strClassName, String strMethod, Object json) throws Exception {
+	public Object InvokeMethod(String strPackage, String strClassName, String strMethod, Object json) {
 		return InvokeMethod(null, strPackage, strClassName, strMethod, json);
 	}
-
-	public Object InvokeMethod(String strFilePath, String strPackage, String strClassName, String strMethod,
-			Object json) throws Exception {
+	public Object InvokeMethod( String strFilePath, String strPackage, String strClassName, String strMethod, Object json)  {
+		return InvokeMethod(null,strFilePath, strPackage, strClassName, strMethod, json);
+	}
+	public Object InvokeMethod(ApplicationContext applicationContext,String strFilePath, String strPackage, String strClassName, String strMethod, Object json)  {
 		// if(strPackage.isEmpty())
 		// return setLog.writeMapError("包名不能为空");
 		// if(strClassName.isEmpty())
@@ -76,28 +90,56 @@ public class Pub {
 		// if(strMethod.isEmpty())
 		// return setLog.writeMapError("方法名不能为空");
 
-		String key = String.format("%s.%s.%sInstanceMethod", strPackage, strClassName, strMethod);
-		Class<?> cls = GetClass(strFilePath, strPackage, strClassName);
-
-		if (cls == null) {
-			return SetLog.writeMapError("找不到对应类型信息");
-		}
 		try {
+			String key = String.format("%s.%s.%sInstanceMethod", strPackage, strClassName, strMethod);
+			Class<?> cls = GetClass(strFilePath, strPackage, strClassName);
+			Object obj = null;
+			if (InstanceObjMap.containsKey(key))
+				obj = InstanceObjMap.get(key);
+			else {
+
+				if (applicationContext != null)
+					obj = applicationContext.getBean(cls);// 单例
+				else {
+					obj = cls.newInstance();// 非单例
+				}
+				InstanceObjMap.put(key, obj);
+			}
+			if (cls == null) {
+				return SetLog.writeMapError("找不到对应类型信息");
+			}
 			Method method = null;
 			if (InstanceMethodMap.containsKey(key))
 				method = (Method) InstanceMethodMap.get(key);
-			 else {
-				 method = cls.getMethod(strMethod, json.getClass());
-				 InstanceMethodMap.put(key, method);
+			else {
+				method = cls.getMethod(strMethod, json.getClass());
+				InstanceMethodMap.put(key, method);
 			}
-			return method.invoke(null, json);
-
+			return method.invoke(obj, json);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return SetLog.writeMapError("找不到对应类型信息", e.toString());
+			return SetLog.writeMapError("找不到对应类型信息", getStackTrace(e.fillInStackTrace()));
 		}
 	}
+	
+	public  String getStackTrace(Throwable aThrowable) {        
+		 Writer result = new StringWriter();
+		 PrintWriter printWriter = new PrintWriter(result);  
+		 aThrowable.printStackTrace(printWriter);  
+			 
+		 
+		printWriter.close(); 
+		try {
+			result.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result.toString();  
+		
+	}
+ 
 
 	public Class<?> GetClass(String strFilePath, String strPackage, String strClassName) throws Exception {
 		if (strPackage.isEmpty() || strClassName.isEmpty())
@@ -106,7 +148,7 @@ public class Pub {
 
 		// try {
 		Class<?> cls = null;
-		if (strFilePath.isEmpty()) {
+		if (Convert.isNullOrEmpty(strFilePath) ) {
 			cls = Class.forName(strClass);
 		} else {
 			System.out.println(String.format("寻找%s文件", strFilePath));

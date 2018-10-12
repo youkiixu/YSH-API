@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,14 +14,17 @@ import www.kiy.cn.service.SystemService;
 import www.kiy.cn.service.TestService;
 import www.kiy.cn.youki.CacheInfo;
 import www.kiy.cn.youki.JMap;
+import www.kiy.cn.youki.Pub;
 import www.kiy.cn.youki.SetLog;
-import www.kiy.cn.youki.YSHException;
 
 @RestController
 @RequestMapping("/tt")
 public class TestController {
 	@Autowired
 	private SaaSService saas;
+	
+	@Autowired
+	 private ApplicationContext applicationContext;
 	
 	@Autowired
 	TestService testService;
@@ -31,12 +35,21 @@ public class TestController {
 	 public String Index() {
 		log.info("msg");
 		SetLog.logInfo("testAAAAAAAAAA");  
-		 try {
-			//systemService.getDataTableByMethod("GetLogin");
-			 JMap map = new JMap();
+		 try { 
 			 
-			 saas.getDataSetByMethod("YSH00000007", "GetLogin",map );
-		} catch (YSHException e) {
+//			 try {
+//					Object obj= Pub.getInstance().InvokeMethod(applicationContext,null,"www.kiy.cn.service.impl", "TestServiceImpl", "tbSaveTest", new JMap());
+//					System.out.println(obj);
+//					
+//				} catch (Exception e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			 
+			   JMap map = new JMap();  
+			   saas.getDataSetByMethod("YSH00000007", "GetProductComments",map);
+			   
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

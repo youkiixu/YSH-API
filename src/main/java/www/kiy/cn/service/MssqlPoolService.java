@@ -3,8 +3,7 @@ package www.kiy.cn.service;
 import java.sql.Connection;
 
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-
-import www.kiy.cn.youki.YSHException;
+ 
 
 public interface MssqlPoolService {
 
@@ -16,9 +15,9 @@ public interface MssqlPoolService {
 	 * 释放资源
 	 */
 	void release(Connection cn);
-	Connection getConnection() throws YSHException;
+	Connection getConnection() throws Exception;
 	 
-	DriverManagerDataSource getDriverManagerDataSource() throws YSHException;
+	DriverManagerDataSource getDriverManagerDataSource() throws Exception;
 
 	// 定时检查连接池情况
 	void CheckPool();

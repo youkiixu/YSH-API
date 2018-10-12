@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- 系统级别 SQL 配置 -->
 <mapper namespace="www.kiy.cn.dao.SystemDao">
-
+ 
 	<!--####################### Sql Start ################################ -->
 	<sql id="SysQueryMethodAllColumns">
 		q.*
@@ -22,8 +22,7 @@
 		<include refid="SysSqlFliterAllColumns" />
 		<include refid="SysQueryMethod" />
 		<include refid="SysSqlFliter" />
-	</select>
-
+	</select> 
 	<select id="SysAppConfigInfo" resultType="www.kiy.cn.youki.JMap">
 		select * from SysAppConfig
 		<choose>
@@ -44,14 +43,8 @@
 	<!--####################### ResultType=JMap End####################### -->
 
 	<!--####################### ResultMap Start ####################### -->
-	<resultMap id="dynamic" type="www.kiy.cn.youki.JMap">
-		<result property="uid" column="uid" />
-		<result property="strName" column="strName" />
-	</resultMap>
-	<resultMap id="dynamic2" type="www.kiy.cn.youki.JMap">
-		<result property="uid" column="uid" />
-		<result property="strName" column="strName" />
-	</resultMap>
+	<resultMap id="dynamic" type="www.kiy.cn.youki.JMap" />
+	<resultMap id="dynamic2" type="www.kiy.cn.youki.JMap" />  
 	<!--####################### ResultMap End####################### -->
 	<!--####################### ResultType=models Start####################### -->
 	<!-- resultMap="SysQueryMethod_M,SysSqlFliter_M" -->

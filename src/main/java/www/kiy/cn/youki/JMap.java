@@ -1,8 +1,8 @@
 package www.kiy.cn.youki;
-
-import java.util.HashMap;
+ 
+import java.io.Serializable;
 import java.util.TreeMap;  
-public class JMap  extends  TreeMap<String,Object> {
+public class JMap  extends  TreeMap<String,Object> implements Serializable {
 
 	/**
 	 * 

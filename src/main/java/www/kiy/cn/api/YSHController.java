@@ -13,10 +13,9 @@ import www.kiy.cn.youki.CacheInfo;
 import www.kiy.cn.youki.Convert;
 import www.kiy.cn.youki.HttpRequestHelp;
 import www.kiy.cn.youki.JMap;
+import www.kiy.cn.youki.Pub;
 import www.kiy.cn.youki.RSA;
-import www.kiy.cn.youki.SetLog;
-import www.kiy.cn.youki.YSHException;
-
+import www.kiy.cn.youki.SetLog; 
 @RestController
 @RequestMapping("/YSH")
 public class YSHController {
@@ -118,7 +117,7 @@ public class YSHController {
 		Object obj;
 		try {
 			obj = saas.getSaaSData(Convert.ToString(configInfo.get("strAppid")),m);
-		} catch (YSHException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			obj = SetLog.writeMapError("内部错误",e.toString());
@@ -131,7 +130,8 @@ public class YSHController {
 		return obj;
 		}catch(Exception ex){
 			ex.printStackTrace();
-			return SetLog.writeMapError("内部运行错误");
+			//return SetLog.writeMapError("内部运行错误",);
+			return SetLog.writeMapError("找不到对应类型信息",  Pub.getInstance().getStackTrace(ex.fillInStackTrace()));
 		}
 	}
 

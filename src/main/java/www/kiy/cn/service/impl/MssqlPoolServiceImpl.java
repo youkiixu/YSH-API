@@ -14,8 +14,7 @@ import org.springframework.stereotype.Service;
 import www.kiy.cn.configs.DBDataSourceConfig;
 import www.kiy.cn.service.MssqlPoolService;
 import www.kiy.cn.youki.Convert;
-import www.kiy.cn.youki.SetLog;
-import www.kiy.cn.youki.YSHException;
+import www.kiy.cn.youki.SetLog; 
 
 @Service 
 public class MssqlPoolServiceImpl implements MssqlPoolService {
@@ -109,7 +108,7 @@ public class MssqlPoolServiceImpl implements MssqlPoolService {
     }
     
     
-    public synchronized Connection getConnection() throws YSHException{ 
+    public synchronized Connection getConnection() throws Exception{ 
     	System.out.println("当前活跃线程数:"+ Convert.ToMssqlJdbcUrl(this.strServerName, this.strDBName));
     	System.out.println("当前空闲线程数:"+free.size());
     	System.out.println("当前活跃线程数:"+active.size());
@@ -137,7 +136,7 @@ public class MssqlPoolServiceImpl implements MssqlPoolService {
                 return getConnection(); 
             } 
         }catch(Exception ex){
-            throw new YSHException(ex.toString());
+            throw new Exception(ex.toString());
         } 
     }
     /* (non-Javadoc)
@@ -158,7 +157,7 @@ public class MssqlPoolServiceImpl implements MssqlPoolService {
 	 * @see www.kiy.cn.service.impl.ConnectPoolService#getDriverManagerDataSource()
 	 */
     @Override
-	public DriverManagerDataSource getDriverManagerDataSource()throws YSHException {
+	public DriverManagerDataSource getDriverManagerDataSource()throws Exception {
     	DriverManagerDataSource ds = db.getMssQLDataSource(strServerName, strDBName, strUserID, strPassword);
 		return ds;
 	}

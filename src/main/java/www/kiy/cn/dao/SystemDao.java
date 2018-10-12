@@ -4,9 +4,10 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.SelectProvider;
+import org.apache.ibatis.annotations.ResultMap;
+import org.apache.ibatis.annotations.SelectProvider; 
 
-import www.kiy.cn.youki.JMap;
+import www.kiy.cn.youki.JMap; 
 
 @Mapper
 public interface SystemDao { 
@@ -14,8 +15,9 @@ public interface SystemDao {
 	 List<List<JMap>> sysQueryAndFliter(@Param("strName") String strName);
 
 	 @SelectProvider(type=SelectProviderDao.class,method="getDataTableBySystemDao")
-	 List<?> getDataByMethod(JMap map );
-	 
+
+	 @ResultMap({ "dynamic", "dynamic2" })
+	 List<List<JMap>> getDataByMethod(JMap map );
 	 @SelectProvider(type=SelectProviderDao.class,method="getDataTableBySystemDao")
 	 List<JMap> getDataSetByMethod(@Param("strName") String strName);
 	 
@@ -25,10 +27,10 @@ public interface SystemDao {
 //	@ResultMap({ "SysQueryMethod_M", "SysSqlFliter_M" })
 //	 List<List<JMap>> getSystemDataSetByName(@Param("strName") String strName);
 	 
-	List<JMap> getEntityByName(@Param("strName") String strName);
+	 List<JMap> getEntityByName(@Param("strName") String strName);
 
 	// List<JMap> SysAppConfigInfo(@Param("appid")String appid , @Param("domain")String domain);
-
-	List<JMap> SysAppConfigInfo(JMap map);
+	 
+	 List<JMap> SysAppConfigInfo(JMap map);
 
 }

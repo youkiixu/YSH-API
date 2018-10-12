@@ -1,54 +1,155 @@
 package www.kiy.cn.service.impl;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.swing.Spring;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import www.kiy.cn.HotKey.sqlType;
+import www.kiy.cn.HotKey;
+import www.kiy.cn.HotKey.eSqlType;
 import www.kiy.cn.dao.SystemDao;
 import www.kiy.cn.service.MssqlService;
 import www.kiy.cn.service.SystemService;
+import www.kiy.cn.youki.CacheInfo;
 import www.kiy.cn.youki.Convert;
 import www.kiy.cn.youki.JMap;
-import www.kiy.cn.youki.YSHException;
+import www.kiy.cn.youki.ListMap;
+import www.kiy.cn.youki.SetLog; 
 @Service
 public class SystemServiceImpl implements SystemService {
 	@Resource
 	private SystemDao systemDao;
+	@Autowired
+	private CacheInfo cacheInfo;
 	
 	@Autowired
 	private MssqlService mssql;
 	
+	@Value("${spring.datasource.url}")
+	private String strDbUrl;
+	@Value("${spring.datasource.username}")
+	private String strUserId;
+	@Value("${spring.datasource.password}")
+	private String strPassword;
+	
+	
 	@Override
-	public List<JMap> getDataTableByMethod(String strName) throws YSHException {
+	public JMap getDBConfig(int DBId) throws Exception { 
+		List<JMap> lst= getDBConfig(DBId,null,0,null,true);
+		if(lst!=null && lst.size()>0)
+			return lst.get(0);
+		return null;
+	}
+	@Override
+	public JMap getDBConfig(String strAppid, boolean bDefault) throws Exception {
+		return getDBConfig(strAppid, null, bDefault);
+	}
+	@Override
+	public JMap getDBConfig(String strAppid, String strDBName, boolean bDefault) throws Exception {
+		List<JMap> lst= getDBConfig(strAppid, 0, strDBName, bDefault);
+		if(lst!=null && lst.size()>0)
+			return lst.get(0);
+		return null;
+	} 
+	@Override
+	public  List<JMap> getDBConfig(String strAppid, int intSysProject, String strDBName, boolean bDefault) throws Exception {
+		  return getDBConfig(0, strAppid,  intSysProject,  strDBName, bDefault);
+	}
+	@Override
+	public List<JMap> getDBConfig(int DBId, String strAppid, int intSysProject, String strDBName, boolean bDefault)
+			throws Exception {
+
+		JMap map = new JMap();
+	//	StringBuilder sb = new StringBuilder();
+		if (DBId != 0) {
+			map.put("@ID", DBId);
+		//	sb.append(DBId);
+		} else {
+			if (strAppid != null) {
+				map.put("@strAppid", strAppid);
+			//	sb.append(strAppid);
+			}
+			if (intSysProject != 0) {
+				map.put("@intSysProject", intSysProject);
+				//sb.append(intSysProject);
+			}
+			if (strDBName != null) {
+				map.put("@strDBName", strDBName);
+				//sb.append(strDBName);
+			}
+
+			if (Convert.isNullOrEmpty(strDBName) && intSysProject != 0) {
+				map.put("@bDefault", bDefault);
+				//sb.append(bDefault);
+			}
+		}
+		List<JMap> lst = QueryCacheListFromMap(HotKey.lstDBConfig, HotKey.QSysDBConfigInfo, map);
+		return lst;
+	}
+	@Override
+	public List<JMap> QueryCacheListFromMap(String key, String strMethod, JMap param) throws Exception {
+		return QueryCacheListFromMap(key, null, strMethod, param);
+	}
+	@Override
+	public List<JMap> QueryCacheListFromMap(String key, JMap config, String strMethod, JMap param) throws Exception {
+
+		return QueryCacheListFromMap(key, SetLog.GetJSONString(param), config, strMethod, param);
+	}
+	/**
+	 * 缓存+ 数据信息读取
+	 * @param key 缓存名
+	 * @param uid 主键
+	 * @param strMethod 执行方法
+	 * @param param  参数
+	 * @return
+	 * @throws Exception
+	 */
+	@Override
+	public List<JMap> QueryCacheListFromMap(String key,String uid,JMap config,String strMethod,JMap param) throws Exception{
+		List<JMap> lst=  cacheInfo.getListFromMap(key, uid);
+		if(lst==null ){
+			lst = new ListMap();
+		}
+		if(lst.size()>0)
+			return lst; 
+		List<JMap> lst1= this.getDataTableByMethod(config,strMethod, param);
+		lst.addAll(lst1);
+		cacheInfo.putListToMap(key, uid, lst);
+		return lst;
+	}
+	
+	@Override
+	public List<JMap> getDataTableByMethod(String strName) throws Exception {
 		
 		return getDataTableByMethod(strName, null);
 	}
 
 	@Override
-	public List<JMap> getDataTableByMethod(String strName, JMap map) throws YSHException {
+	public List<JMap> getDataTableByMethod(String strName, JMap map) throws Exception {
 
 		return getDataTableByMethod(null, strName, map);
 
 	}
 
 	@Override
-	public  List<List<JMap>> getDataSetByMethod(String strName) throws YSHException {
+	public  List<List<JMap>> getDataSetByMethod(String strName) throws Exception {
  
 		return getDataSetByMethod(strName, null);
 	}
 
 	@Override
-	public  List<List<JMap>> getDataSetByMethod(String strName, JMap map) throws YSHException {
+	public  List<List<JMap>> getDataSetByMethod(String strName, JMap map) throws Exception {
 
 		return getDataSetByMethod(null, strName, map);
 
 	}
-	public List<List<JMap>> getDataSetByMethod(JMap config, String strMethod, JMap param) throws YSHException{
+	public List<List<JMap>> getDataSetByMethod(JMap config, String strMethod, JMap param) throws Exception{
 		
 		@SuppressWarnings("unchecked")
 		 List<List<JMap>> mm =( List<List<JMap>>) getDataTableBySystemDao( config,strMethod, param);
@@ -58,7 +159,7 @@ public class SystemServiceImpl implements SystemService {
 	}
 	
 	@Override
-	public List<JMap> getDataTableByMethod(JMap config, String strName, JMap map) throws YSHException {
+	public List<JMap> getDataTableByMethod(JMap config, String strName, JMap map) throws Exception {
 		@SuppressWarnings("unchecked")
 		List<JMap> mm =(List<JMap>) getDataTableBySystemDao( config,strName, map);
 		if (mm != null)
@@ -67,8 +168,8 @@ public class SystemServiceImpl implements SystemService {
 
 	}
 
-	public List<?> getDataTableBySystemDao(final JMap config,String strName, final JMap map) throws YSHException {
-		return getDataTableBySystemDao(config,strName,map,sqlType.Jdbc);
+	public List<?> getDataTableBySystemDao(final JMap config,String strName, final JMap map) throws Exception {
+		return getDataTableBySystemDao(config,strName,map,eSqlType.Jdbc);
 		
 	}
 	/**
@@ -82,26 +183,66 @@ public class SystemServiceImpl implements SystemService {
 	 * @return
 	 * @throws YSHException
 	 */
-	public List<?> getDataTableBySystemDao( JMap config,String strName, final JMap map,sqlType type) throws YSHException {
-	 
-		List<List<JMap>> lst= systemDao.sysQueryAndFliter(strName); 
-		if (lst == null || lst.get(0).size()==0)
-			throw new YSHException("找不到对应方法"); 
-		JMap SysQueryMethod =  lst.get(0).get(0);
+	@SuppressWarnings("unchecked")
+	public List<?> getDataTableBySystemDao( JMap config,String strName, final JMap map,eSqlType type) throws Exception {
 		
-		String strServerName=Convert.ToString( SysQueryMethod.get("strServerName"));
-	//	String strInstanceName = Convert.ToString(SysQueryMethod.get("strInstanceName"));
-		String strDBName = Convert.ToString(SysQueryMethod.get("strDBName"));
-		String strUserID = Convert.ToString(SysQueryMethod.get("strUserID"));
-		String strPassword = Convert.ToString(SysQueryMethod.get("strPassword"));
-		if(config!=null){
-			 strServerName=Convert.ToString( config.get("strServerName"));
-			// strInstanceName = Convert.ToString(config.get("strInstanceName"));
+		
+		JMap m= cacheInfo.getMap(HotKey.mSysQueryMethodConfig);
+		if(m==null || m.size()==0){
+			if(m==null)
+				m =new JMap();
+		}
+		List<List<JMap>> lst=null;
+		if(m.containsKey(strName))
+			lst=(List<List<JMap>>)SetLog.ObjectToObject(m.get(strName), List.class);
+		else{
+			lst=(List<List<JMap>>) systemDao.sysQueryAndFliter(strName);
+			m.put(strName, lst);
+			cacheInfo.putJMap(HotKey.mSysQueryMethodConfig, m);
+		} 
+		
+		if (lst == null || lst.get(0).size()==0)
+			throw new Exception("找不到对应方法"); 
+		JMap SysQueryMethod = SetLog.ObjectToListMap( lst.get(0)).get(0);
+		
+		String strServerName =null;
+		// String strInstanceName =null;
+		String strDBName =null;
+		String strUserID =null;
+		String strPassword = null;
+		
+		
+		int intDBConfig = Convert.ToInt32( SysQueryMethod.get("intDBConfig"));
+		if (!Convert.isNullOrEmpty(Convert.ToString(SysQueryMethod.get("strServerName")))) {
+			//当直接指定时获取直接指定数据库
+			strServerName = Convert.ToString(SysQueryMethod.get("strServerName"));
+			// strInstanceName = Convert.ToString(SysQueryMethod.get("strInstanceName"));
+			strDBName = Convert.ToString(SysQueryMethod.get("strDBName"));
+			strUserID = Convert.ToString(SysQueryMethod.get("strUserID"));
+			strPassword = Convert.ToString(SysQueryMethod.get("strPassword")); 
+		}else if(intDBConfig!=0  ){  
+			 config= this.getDBConfig(intDBConfig);
+				 
+		}
+		if(config!=null && config.size()>0)
+		{
+			 strServerName = Convert.ToString(config.get("strServerName"));
+			//  strInstanceName = Convert.ToString(config.get("strInstanceName"));
 			 strDBName = Convert.ToString(config.get("strDBName"));
 			 strUserID = Convert.ToString(config.get("strUserID"));
 			 strPassword = Convert.ToString(config.get("strPassword"));
+			
+		}else{
+			//系统默认级别路径 
+			//jdbc:sqlserver://101.37.27.55:50156;DatabaseName=SaaS;integratedSecurity=false
+			String []arr= this.strDbUrl.split(";");
+			strServerName= arr[0].split("://")[1];
+			strDBName = arr[1].split("=")[1]; 
+			strUserID = this.strUserId;
+			strPassword = this.strPassword;  
 		}
-		
+		type = eSqlType.mybatis;
+
 		String strMethod = SysQueryMethod.get("strMethod").toString();
 		String strGroupBy = SysQueryMethod.get("strGroupBy").toString();
 		String strFrom = SysQueryMethod.get("strFrom") == null ? "" : SysQueryMethod.get("strFrom").toString();
@@ -109,11 +250,11 @@ public class SystemServiceImpl implements SystemService {
 		StringBuilder str = new StringBuilder();
 
 		StringBuilder sql = new StringBuilder(String.format("%s %s", strMethod, strFrom));
-		Iterator<JMap> iterator = lst.get(1).iterator();
+		Iterator<?> iterator = lst.get(1).iterator();
 		JMap par = new JMap();
 
 		while (iterator.hasNext()) {
-			JMap tmp = iterator.next();
+			JMap tmp = SetLog.ObjectToMap(iterator.next());
 			String strFliterParam = tmp.get("strFliterParam").toString();
 
 			String strColumn = Convert.ToString(tmp.get("strColumn"));
@@ -145,7 +286,7 @@ public class SystemServiceImpl implements SystemService {
 				//strFliterParam=@userId  strFliterParam1=$userId
 				if (bIsNotNull) {  
 					if (map == null || (!map.containsKey(strFliterParam) && !map.containsKey(strFliterParam1)))
-						throw new YSHException(String.format("关键参数%s必填", strFliterParam));
+						throw new Exception(String.format("关键参数%s必填", strFliterParam));
 				}
 				
 				if (map != null && (map.containsKey(strFliterParam) || map.containsKey(strFliterParam1) )) {
@@ -193,7 +334,7 @@ public class SystemServiceImpl implements SystemService {
 
 						else if (strRule.toUpperCase().contains("in")) {
 							if (!map.containsKey(strFliterParam))// 必须由内部数据统一过滤
-								throw new YSHException("过滤参数{%s}缺失");
+								throw new Exception("过滤参数{%s}缺失");
 							str.append(
 									String.format(" %s (%s) ", strRule, strValue.replace("or", "").replace("=", "")));
 
@@ -278,7 +419,7 @@ public class SystemServiceImpl implements SystemService {
 			//par.put("rowIndex", rowIndex);
 			//par.put("pageRecord", pageRecord);
 			String sqlCount = "";
-			if (strFrom == null || strFrom.isEmpty()) {
+			if (Convert.isNullOrEmpty(strFrom )  ) {
 				int len = sql.toString().toUpperCase().lastIndexOf("FORM");
 				sqlCount = String.format("  select count(1) intByPageIndex/*intEmptyByPageIndex*/ %s \n %s  \n",
 						sql.substring(len, sql.length() - len), condition);
@@ -293,20 +434,34 @@ public class SystemServiceImpl implements SystemService {
 			int roNumIndx = sql.toString().toUpperCase().indexOf("ROW_NUMBER()");
 			if (roNumIndx > 0)
 				sql = sql.insert(roNumIndx, String.format("  top %s   ",  Convert.ToInt32( rowIndex) *  Convert.ToInt32(pageRecord) ));
-			strSysSql = String.format(
-					" select * from ( %s  %s %s) t where t.rowNum>=(#{rowIndex}-1)*convert(int,#{pageRecord})+1 and t.rowNum<=#{rowIndex}*convert(int,#{pageRecord}) \n %s",
-					sql.toString(), condition.toString(), strGroupBy, sqlCount);
-			if(sqlType.mybatis!=type){
-				strSysSql = strSysSql.replaceAll("#{rowIndex}", sRowIndex);
-				strSysSql = strSysSql.replaceAll("#{pageRecord}", sPageRecord);
-			}
+			StringBuilder builder = new StringBuilder();
+			builder.append("select * from ( ");
+			builder.append(sql.toString());
+			builder.append( condition.toString());
+			builder.append(strGroupBy);
+			builder.append(" ) t where ");
+			
+			builder.append(" t.rowNum>= (").append(sRowIndex).append(" -1 ) *Convert(int, ").append(sPageRecord).append(")+1 ");
+			builder.append(" and "); 
+			builder.append(" t.rowNum<= ").append(sRowIndex).append(" *Convert(int, ").append(sPageRecord).append(") ");
+			strSysSql=builder.toString();
+			
+//			strSysSql = String.format(
+//					" select * from ( %s  %s %s) t where t.rowNum>=(#{rowIndex}-1)*convert(int,#{pageRecord})+1 and t.rowNum<=#{rowIndex}*convert(int,#{pageRecord}) \n %s",
+//					sql.toString(), condition.toString(), strGroupBy, sqlCount);
+//			if(sqlType.mybatis!=type){
+//				strSysSql = strSysSql.replaceAll("#{rowIndex}", sRowIndex);
+//				strSysSql = strSysSql.replaceAll("#{pageRecord}", sPageRecord);
+//			}
 			
 		}
-		System.out.println(strSysSql);
-		if (Convert.isNullOrEmpty(strServerName) ) {	
+		//System.out.println(strSysSql);
+		if (config==null || config.size()==0) {	
 			//系统级别
 			par.put("strSysSqlKey", strSysSql); 
-			return systemDao.getDataByMethod(par); 
+			List<?> l =systemDao.getDataByMethod(par);
+			
+			return  l; 
 		} else {
 			//业务级别 
 			 //mssql.getDataByMethod(config, strSysSql, par);

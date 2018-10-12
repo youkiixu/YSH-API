@@ -22,7 +22,7 @@ public class TestServiceImpl implements TestService  {
 	TestDao testDao; 
 	@Transactional(propagation=Propagation.REQUIRED,isolation = Isolation.DEFAULT,timeout=36000,rollbackFor=Exception.class)
 	@Override
-   	public JMap tbSaveTest() {
+   	public JMap tbSaveTest(JMap dd) {
 		// TODO Auto-generated method stub
 		JMap m = new JMap();
 		m.put("a", "This is java Test"); 
@@ -32,7 +32,7 @@ public class TestServiceImpl implements TestService  {
 		//int obj=	testDao.tbSaveTest(m);
 		//obj +=	testDao.tbSaveTest(m2); 
 		
-		systemDao.getEntityByName("xxx");
+		systemDao.SysAppConfigInfo(new JMap());
 		
 		int obj = testDao.insertTableA(m);
 		obj = testDao.insertTableA(m2);
