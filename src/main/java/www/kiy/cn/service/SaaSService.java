@@ -2,6 +2,7 @@ package www.kiy.cn.service;
 
 import java.util.List;
 
+import www.kiy.cn.HotKey.eSqlType;
 import www.kiy.cn.youki.JMap; 
 
 public interface SaaSService {
@@ -16,6 +17,6 @@ public interface SaaSService {
 
 	public List<JMap> getDataTableByMethod(String strAppid,String strMethod, JMap param) throws Exception;
 
-	Object getSaaSData(String strAppid, JMap map, String type) throws Exception;
+	Object getSaaSData(String strAppid, JMap map, eSqlType type) throws Exception;
 
 }

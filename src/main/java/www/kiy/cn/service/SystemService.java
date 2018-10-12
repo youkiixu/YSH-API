@@ -2,6 +2,7 @@ package www.kiy.cn.service;
 
 import java.util.List;
 
+import www.kiy.cn.HotKey.eSqlType;
 import www.kiy.cn.youki.JMap; 
 
 public interface SystemService {
@@ -36,6 +37,12 @@ public interface SystemService {
 	JMap getDBConfig(String strAppid, boolean bDefault) throws Exception;
 
 	JMap getDBConfig(int DBId) throws Exception;
+
+	List<?> getDataTableBySystemDao(JMap config, String strName, JMap map, eSqlType type) throws Exception;
+
+	List<JMap> getDataTableByMethod(JMap config, String strName, JMap map, eSqlType type) throws Exception;
+
+	List<JMap> getDataTableByMethod(String strName, JMap map, eSqlType type) throws Exception;
 	
 	
 }

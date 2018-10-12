@@ -102,7 +102,8 @@ public class MssqlPoolServiceImpl implements MssqlPoolService {
         for (Connection cn : active ) {
             isClose(cn,true);
         }
-
+        free.clear();
+        active.clear();
         threadLocal.remove();
         
     }
@@ -146,12 +147,11 @@ public class MssqlPoolServiceImpl implements MssqlPoolService {
 	public synchronized void release(Connection cn)  {
        
         if(!isClose(cn,false)){
-            free.add(cn);
-            active.remove(cn);
-            threadLocal.remove();
-            notifyAll();   
+            free.add(cn); 
         }
-
+        active.remove(cn);
+        threadLocal.remove();
+        notifyAll();  
     }  
     /* (non-Javadoc)
 	 * @see www.kiy.cn.service.impl.ConnectPoolService#getDriverManagerDataSource()

@@ -22,7 +22,10 @@ public interface MssqlService {
 	List<?> getDataTableByMethod(String strServerName, String strDBName, String strUserID, String strPassword,
 			String strSql, JMap param) throws Exception;
 
-	List<?> getDataByMethod(String strServerName, String strDBName, String strUserID, String strPassword, String strSql,
+	List<?> getDataByJdbcTemplate(String strServerName, String strDBName, String strUserID, String strPassword, String strSql,
 			String strSqlCount, JMap param) throws Exception;
+
+	List<?> getDataByJDBC(String strServerName, String strDBName, String strUserID, String strPassword, String strSql,
+			String strSqlCount, JMap par) throws Exception;
  
 }

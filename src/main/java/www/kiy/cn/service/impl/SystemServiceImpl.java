@@ -138,14 +138,23 @@ public class SystemServiceImpl implements SystemService {
 
 		return getDataTableByMethod(strName, null);
 	}
+	public List<JMap> getDataTableByMethod(String strName, JMap map) throws Exception {
+		return getDataTableByMethod(null, strName,  map);
+	}
+	
+	@Override
+	public List<JMap> getDataTableByMethod(JMap config, String strName, JMap map) throws Exception {
+		// TODO Auto-generated method stub
+		return getDataTableByMethod( config, strName,  map,eSqlType.Jdbc);
+	}
+	 
 
 	@Override
-	public List<JMap> getDataTableByMethod(String strName, JMap map) throws Exception {
-
-		return getDataTableByMethod(null, strName, map);
-
+	public List<JMap> getDataTableByMethod(String strName, JMap map, eSqlType type) throws Exception {
+		// TODO Auto-generated method stub
+		return this.getDataTableByMethod(null,strName,map,type);
 	}
-
+	
 	@Override
 	public List<List<JMap>> getDataSetByMethod(String strName) throws Exception {
 
@@ -166,9 +175,9 @@ public class SystemServiceImpl implements SystemService {
 	}
 
 	@Override
-	public List<JMap> getDataTableByMethod(JMap config, String strName, JMap map) throws Exception {
+	public List<JMap> getDataTableByMethod(JMap config, String strName, JMap map,eSqlType type) throws Exception {
 		@SuppressWarnings("unchecked")
-		List<JMap> mm = (List<JMap>) getDataTableBySystemDao(config, strName, map);
+		List<JMap> mm = (List<JMap>) getDataTableBySystemDao(config, strName, map,type);
 		if (mm != null)
 			System.out.println(mm);
 		return mm;
@@ -189,9 +198,10 @@ public class SystemServiceImpl implements SystemService {
 	 * @throws YSHException
 	 */
 	@SuppressWarnings("unchecked")
+	@Override
 	public List<?> getDataTableBySystemDao(JMap config, String strName, final JMap map, eSqlType type)
 			throws Exception {
-		type = eSqlType.JdbcTemplate;
+		//type = eSqlType.mybatis;
 
 		JMap m = cacheInfo.getMap(HotKey.mSysQueryMethodConfig);
 		if (m == null || m.size() == 0) {
@@ -258,7 +268,8 @@ public class SystemServiceImpl implements SystemService {
 		StringBuilder sql = new StringBuilder(String.format("%s %s", strMethod, strFrom));
 		Iterator<?> iterator = lst.get(1).iterator();
 		JMap par = new JMap();
-
+		String p ="@";
+		int size =0;
 		while (iterator.hasNext()) {
 			JMap tmp = SetLog.ObjectToMap(iterator.next());
 			String strFliterParam = tmp.get("strFliterParam").toString();
@@ -315,7 +326,9 @@ public class SystemServiceImpl implements SystemService {
 						switch (type) {
 						case Jdbc:
 							strFliterParam2 = "?";
-							par.put(strFliterParam, objVal);
+							p=String.format("%s", size++);
+							
+							par.put(p, objVal);
 							break;
 						case JdbcTemplate:
 							strFliterParam2 = strFliterParam.replace("@", ":");
@@ -366,9 +379,10 @@ public class SystemServiceImpl implements SystemService {
 		}
 		String sqlCount = "";
 		StringBuilder builder = new StringBuilder();
-
-		if (!Boolean.valueOf(SysQueryMethod.get("bPage").toString())) {
-			builder.append(condition).append(" ").append(strGroupBy);
+		boolean bPage= Convert.ToBoolean(SysQueryMethod.get("bPage"));
+		
+		if (!bPage) {
+			builder.append(sql.toString()).append(condition).append(" ").append(strGroupBy);
 		} else {
 			Object rowIndex = 1;
 			Object pageRecord = 15;
@@ -389,21 +403,32 @@ public class SystemServiceImpl implements SystemService {
 			switch (type) {
 			case Jdbc:
 				sRowIndex = "?";
-				sPageRecord = "?";
-				break;
-			case JdbcTemplate:
-				sRowIndex = ":rowIndex";
-				sPageRecord = ":pageRecord";
+				sPageRecord = "?";  
+				p=String.format("%s", size++);
+				par.put(p, rowIndex);
+				p=String.format("%s", size++);
+				par.put(p, pageRecord);
+				p=String.format("%s", size++);
+				par.put(p, rowIndex);
+				p=String.format("%s", size++);
+				par.put(p, pageRecord);
 				break;
 			case mybatis:
-				sRowIndex = "#{rowIndex}";
-				sPageRecord = "#{pageRecord}";
+			case JdbcTemplate:
+				if(eSqlType.JdbcTemplate==type){
+					sRowIndex = ":rowIndex";
+					sPageRecord = ":pageRecord";
+				}else{
+					sRowIndex = "#{rowIndex}";
+					sPageRecord = "#{pageRecord}";
+				}
+				par.put("rowIndex", rowIndex);
+				par.put("pageRecord", pageRecord);
 				break;
 			}
 			// par.put(sRowIndex, rowIndex);
 			// par.put(sPageRecord, pageRecord);
-			par.put("rowIndex", rowIndex);
-			par.put("pageRecord", pageRecord);
+			
 
 			if (Convert.isNullOrEmpty(strFrom)) {
 				int len = sql.toString().toUpperCase().lastIndexOf("FORM");
@@ -433,17 +458,7 @@ public class SystemServiceImpl implements SystemService {
 			builder.append(" and ");
 			builder.append(" t.rowNum<= ").append(sRowIndex).append(" *Convert(int, ").append(sPageRecord)
 					.append(") \r\n");
-
-			// strSysSql = String.format(
-			// " select * from ( %s %s %s) t where
-			// t.rowNum>=(#{rowIndex}-1)*convert(int,#{pageRecord})+1 and
-			// t.rowNum<=#{rowIndex}*convert(int,#{pageRecord}) \n %s",
-			// sql.toString(), condition.toString(), strGroupBy, sqlCount);
-			// if(sqlType.mybatis!=type){
-			// strSysSql = strSysSql.replaceAll("#{rowIndex}", sRowIndex);
-			// strSysSql = strSysSql.replaceAll("#{pageRecord}", sPageRecord);
-			// }
-
+ 
 		}
 		if (strServerName == null && (config == null || config.size() == 0)) {
 			// 系统级别
@@ -453,11 +468,25 @@ public class SystemServiceImpl implements SystemService {
 			return l;
 		} else {
 			// 业务级别
-			if (type == eSqlType.JdbcTemplate)
-				return mssql.getDataByMethod(strServerName, strDBName, strUserID, strPassword, builder.toString(),
+			List<?> l =null;
+			switch(type){
+			case JdbcTemplate:
+					l= mssql.getDataByJdbcTemplate(strServerName, strDBName, strUserID, strPassword, builder.toString(),
+							sqlCount.toString(), par);
+					break;
+			case mybatis:
+				par.put("strSysSqlKey", builder.toString());
+				l = systemDao.getDataByMethod(par);
+				 
+				break;
+			case Jdbc:
+				if(bPage)
+					sqlCount+=" select ?, ?, ?, ? "; 
+				l= mssql.getDataByJDBC(strServerName, strDBName, strUserID, strPassword, builder.toString(),
 						sqlCount.toString(), par);
-			return null;
+				break;
+			}
+			return l;
 		}
-	}
-
+	}  
 }

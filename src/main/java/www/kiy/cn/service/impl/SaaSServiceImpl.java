@@ -8,7 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import www.kiy.cn.HotKey; 
+import www.kiy.cn.HotKey;
+import www.kiy.cn.HotKey.eSqlType;
 import www.kiy.cn.dao.SystemDao;
 import www.kiy.cn.service.SaaSService;
 import www.kiy.cn.service.SystemService;
@@ -64,10 +65,10 @@ public class SaaSServiceImpl implements SaaSService {
 
 	@Override
 	public Object getSaaSData(String strAppid,JMap map) throws Exception {
-		return getSaaSData( strAppid, map,"jdbcTemplate");
+		return getSaaSData( strAppid, map,eSqlType.Jdbc);
 	}
 	@Override
-	public Object getSaaSData(String strAppid,JMap map,String type)  throws Exception {
+	public Object getSaaSData(String strAppid,JMap map,eSqlType type)  throws Exception {
 			 
 		// TODO Auto-generated method stub
 		JMap param = null;
@@ -83,7 +84,7 @@ public class SaaSServiceImpl implements SaaSService {
 //			} else {
 //				obj = getDataTableByMethod(strAppid,strMethod, param);
 //			} 
-			 Object  obj=systemService.getDataTableBySystemDao(this.getAppConfig(strAppid),strMethod, param);
+			 Object  obj=systemService.getDataTableBySystemDao(this.getAppConfig(strAppid),strMethod, param,type);
 			 
 			
 			if(obj.getClass().getName().equals("JMap")){
@@ -115,7 +116,7 @@ public class SaaSServiceImpl implements SaaSService {
 			if (dt.containsKey(cKey)) {
 				InfoMethod = SetLog.ObjectToMap(dt.get(cKey)); // xxxxxx
 			} else {
-				List<JMap> lst = systemService.getDataTableByMethod(HotKey.QgetSysInvokeMethod, map);
+				List<JMap> lst = systemService.getDataTableByMethod(HotKey.QgetSysInvokeMethod, map,type);
 
 				if (lst.size() == 0)
 					return SetLog.writeMapError("方法主键不存在");
