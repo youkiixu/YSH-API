@@ -121,7 +121,7 @@ public class MssqlServiceImpl implements MssqlService {
 	@Override
 	public List<?> getDataByJDBC(String strServerName, String strDBName, String strUserID, String strPassword,
 			String strSql, String strSqlCount, JMap par) throws Exception {
-
+		
 		MssqlPoolService poolService = getConnectPoolService(strServerName, strDBName, strUserID, strPassword);
 		Connection cn = poolService.getConnection();
 		PreparedStatement cmd = null;
@@ -168,13 +168,7 @@ public class MssqlServiceImpl implements MssqlService {
 				lst2.add(lst);
 				lst2.add(lst1);
 				return lst2;
-				
-//				int intRowCount1 = rs.getRow();
-//				if (intRowCount1 > 0) {
-//
-//				}
 			}
-
 			return lst;
 		} catch (Exception ex) {
 			throw new Exception(ex);

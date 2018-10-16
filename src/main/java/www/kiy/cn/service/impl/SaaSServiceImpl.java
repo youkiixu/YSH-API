@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import www.kiy.cn.HotKey;
 import www.kiy.cn.HotKey.eSqlType;
-import www.kiy.cn.dao.SystemDao;
+import www.kiy.cn.dao.saas.SaaS;
 import www.kiy.cn.service.SaaSService;
 import www.kiy.cn.service.SystemService;
 import www.kiy.cn.youki.CacheInfo;
@@ -28,7 +28,7 @@ public class SaaSServiceImpl implements SaaSService {
 	@Autowired
 	private CacheInfo cacheInfo;
 	@Resource
-	SystemDao systemDao;
+	SaaS systemDao;
 	@Autowired
 	private SystemService systemService;
 

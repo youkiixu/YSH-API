@@ -2,6 +2,7 @@ package www.kiy.cn.service;
 
 import java.sql.Connection;
 
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
  
 
@@ -39,5 +40,6 @@ public interface MssqlPoolService {
 	void setStrPassword(String strPassword);
 
 	void setDriverManager(String strServerName, String strDBName, String strUserName, String strPassword);
+ 
 
 }

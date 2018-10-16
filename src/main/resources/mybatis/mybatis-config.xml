@@ -17,12 +17,12 @@
 		<!-- <typeAlias alias="User" type="com.kiy.cn.User"/> -->
 		<!-- 根据包取别名，把包下面的所有类都按类名来取别名 -->
 		<!-- 这用可以简化代码量 -->
-		<!--  <package name="www.kiy.cn.dao"/>   -->
+	  <package name="www.kiy.cn.dao"/>   
 	</typeAliases>
 
-	<environments default="development">
+	<environments default="saas">
 
-		<environment id="development">
+		<environment id="saas">
 			<!-- 配置事务管理 ，采用JDBC管理事务 -->
 			<transactionManager type="JDBC" />
 			<!-- POOLED是mybatis的 数据源 JNDI是基于tomcat的数据源 -->
@@ -35,17 +35,31 @@
 
 		</environment>
 
-	<!-- 	<environment id="test">
+	 	<environment id="YJ">
 			<transactionManager type="JDBC" />
 			<dataSource type="POOLED">
-				<property name="driver" value="{}" />
-				<property name="url" value="" />
-				<property name="username" value="root" />
-				<property name="password" value="admin" />
+				<property name="driver" value="${spring.datasource.driver-class-name}" />
+				<property name="url" value="${YJ.datasource.url}" />
+				<property name="username" value="${YJ.datasource.username}" />
+				<property name="password" value="${YJ.datasource.password}" />
 			</dataSource>
-		</environment> -->
+		</environment>  
+		
+		<environment id="YSH">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="${spring.datasource.driver-class-name}" />
+				<property name="url" value="${YSH.datasource.url}" />
+				<property name="username" value="${YSH.datasource.username}" />
+				<property name="password" value="${YSH.datasource.password}" />
+			</dataSource>
+		</environment>   
+		
 	</environments>  
 
-	 <mappers> <mapper resource="mybatis/System/SystemMapper.xml" /> </mappers> 
+	 <mappers> 
+	   <mapper resource="mybatis/System/SystemMapper.xml" />  
+	  
+	  </mappers> 
 
 </configuration>

@@ -1,4 +1,4 @@
-package www.kiy.cn.dao;
+package www.kiy.cn.dao.saas;
 
 import java.util.List;
 
@@ -10,16 +10,18 @@ import org.apache.ibatis.annotations.SelectProvider;
 import www.kiy.cn.youki.JMap; 
 
 @Mapper
-public interface SystemDao { 
+public interface SaaS { 
 	
 	 List<List<JMap>> sysQueryAndFliter(@Param("strName") String strName);
 
 	 @SelectProvider(type=SelectProviderDao.class,method="getDataTableBySystemDao")
-
 	 @ResultMap({ "dynamic", "dynamic2" })
 	 List<List<JMap>> getDataByMethod(JMap map );
 	 @SelectProvider(type=SelectProviderDao.class,method="getDataTableBySystemDao")
 	 List<JMap> getDataSetByMethod(@Param("strName") String strName);
+	 
+	 
+	  
 	 
 	 
 //	@Select(" \r\n select * from SysQueryMethod with(nolock) where strName= #{strName} \r\n select  f.* from SysSqlFliter f with(nolock) inner join  SysQueryMethod  s with(nolock)  on s.uid=f.uidVouch where s.strName=#{strName} and bNoUsed=0  ")

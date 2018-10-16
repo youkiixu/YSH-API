@@ -1,4 +1,4 @@
-package www.kiy.cn.dao;
+package www.kiy.cn.dao.saas;
 
 import www.kiy.cn.youki.JMap;
 

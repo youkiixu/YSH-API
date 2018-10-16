@@ -6,6 +6,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
 
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.SqlSessionFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -52,6 +54,12 @@ public class MssqlPoolServiceImpl implements MssqlPoolService {
 		this.strPassword= strPassword;
 		CheckPool(); 
 		this.db= new  DBDataSourceConfig();
+		try {
+			db.getMssQLDataSource(strServerName, strDBName, strUserID, strPassword);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
     
@@ -161,6 +169,13 @@ public class MssqlPoolServiceImpl implements MssqlPoolService {
     	DriverManagerDataSource ds = db.getMssQLDataSource(strServerName, strDBName, strUserID, strPassword);
 		return ds;
 	}
+//    @Override
+//    public SqlSessionFactory getSqlSessionFactory()throws Exception {
+//    	//db.getMssQLDataSource(strServerName, strDBName, strUserID, strPassword);
+//    	SqlSessionFactoryBean factory= db.getSqlSessionFactory(strServerName, strDBName);
+//    	return factory.getObject(); 
+//	}
+    
 	
 
 	// 定时检查连接池情况

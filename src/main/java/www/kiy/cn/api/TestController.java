@@ -2,6 +2,9 @@ package www.kiy.cn.api;
  
 import java.util.List;
 
+import javax.annotation.Resource;
+
+import org.mybatis.spring.SqlSessionTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,8 @@ public class TestController {
 	@Autowired
 	 private ApplicationContext applicationContext;
 	
+	@Resource(name="YSHSqlSessionTemplate")
+	SqlSessionTemplate tmp;
 	@Autowired
 	TestService testService;
 	@Autowired
@@ -37,14 +42,15 @@ public class TestController {
 		SetLog.logInfo("testAAAAAAAAAA");  
 		 try { 
 			 
-//			 try {
-//					Object obj= Pub.getInstance().InvokeMethod(applicationContext,null,"www.kiy.cn.service.impl", "TestServiceImpl", "tbSaveTest", new JMap());
-//					System.out.println(obj);
-//					
-//				} catch (Exception e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+ 		 try {
+ 			
+				 //	Object obj= Pub.getInstance().InvokeMethod(applicationContext,null,"www.kiy.cn.service.impl", "TestServiceImpl", "tbSaveTest", new JMap());
+			// 	System.out.println(obj);
+ 				
+ 			} catch (Exception e) {
+ 				// TODO Auto-generated catch block
+ 					e.printStackTrace();
+ 			}
 //			 
 			   JMap map = new JMap();  
 			 //  map.put("@IsHidden",0);

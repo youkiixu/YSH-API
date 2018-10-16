@@ -2,11 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- 系统级别 SQL 配置 -->
-<mapper namespace="www.kiy.cn.dao.TestDao">
+<mapper namespace="www.kiy.cn.dao.saas.SaaS">
 
 	<insert id="insertTableA"  parameterType="www.kiy.cn.youki.JMap"
 		useGeneratedKeys="true" keyProperty="id" keyColumn="Id">
 		insert into tblA
 		values(#{a})
 	</insert>
+	<resultMap id="dynamic" type="www.kiy.cn.youki.JMap" />
+	<resultMap id="dynamic2" type="www.kiy.cn.youki.JMap" />  
 </mapper>

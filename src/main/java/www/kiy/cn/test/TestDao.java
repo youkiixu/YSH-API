@@ -1,4 +1,4 @@
-package www.kiy.cn.dao;
+package www.kiy.cn.test;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;

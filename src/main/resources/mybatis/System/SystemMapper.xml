@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- 系统级别 SQL 配置 -->
-<mapper namespace="www.kiy.cn.dao.SystemDao">
+<mapper namespace="www.kiy.cn.dao.saas.SaaS">
  
 	<!--####################### Sql Start ################################ -->
 	<sql id="SysQueryMethodAllColumns">
@@ -46,8 +46,7 @@
 	<resultMap id="dynamic" type="www.kiy.cn.youki.JMap" />
 	<resultMap id="dynamic2" type="www.kiy.cn.youki.JMap" />  
 	<!--####################### ResultMap End####################### -->
-	<!--####################### ResultType=models Start####################### -->
-	<!-- resultMap="SysQueryMethod_M,SysSqlFliter_M" -->
+	<!--####################### ResultType=models Start####################### --> 
 	<select id="sysQueryAndFliter" parameterType="www.kiy.cn.youki.JMap"
 		resultMap="dynamic,dynamic2">
 		select * from

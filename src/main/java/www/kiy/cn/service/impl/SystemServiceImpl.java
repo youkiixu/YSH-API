@@ -3,24 +3,31 @@ package www.kiy.cn.service.impl;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Resource;
+
+import org.apache.ibatis.annotations.ResultMap;
+import org.apache.ibatis.annotations.SelectProvider;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import www.kiy.cn.HotKey;
 import www.kiy.cn.HotKey.eSqlType;
-import www.kiy.cn.dao.SystemDao;
+import www.kiy.cn.dao.saas.SelectProviderDao;
+import www.kiy.cn.dao.saas.SaaS;
 import www.kiy.cn.service.MssqlService;
 import www.kiy.cn.service.SystemService;
 import www.kiy.cn.youki.CacheInfo;
 import www.kiy.cn.youki.Convert;
 import www.kiy.cn.youki.JMap;
 import www.kiy.cn.youki.ListMap;
+import www.kiy.cn.youki.Pub;
 import www.kiy.cn.youki.SetLog;
 
 @Service
 public class SystemServiceImpl implements SystemService {
 	@Resource
-	private SystemDao systemDao;
+	private SaaS systemDao;
 	@Autowired
 	private CacheInfo cacheInfo;
 
@@ -34,6 +41,9 @@ public class SystemServiceImpl implements SystemService {
 	@Value("${spring.datasource.password}")
 	private String strPassword;
 
+	@Autowired
+	 private ApplicationContext applicationContext;
+	
 	@Override
 	public JMap getDBConfig(int DBId) throws Exception {
 		List<JMap> lst = getDBConfig(DBId, null, 0, null, true);
@@ -201,7 +211,7 @@ public class SystemServiceImpl implements SystemService {
 	@Override
 	public List<?> getDataTableBySystemDao(JMap config, String strName, final JMap map, eSqlType type)
 			throws Exception {
-		//type = eSqlType.mybatis;
+		type = eSqlType.mybatis;
 
 		JMap m = cacheInfo.getMap(HotKey.mSysQueryMethodConfig);
 		if (m == null || m.size() == 0) {
@@ -220,13 +230,14 @@ public class SystemServiceImpl implements SystemService {
 		if (lst == null || lst.get(0).size() == 0)
 			throw new Exception("找不到对应方法");
 		JMap SysQueryMethod = SetLog.ObjectToListMap(lst.get(0)).get(0);
-
+		
 		String strServerName = null;
 		// String strInstanceName =null;
 		String strDBName = null;
 		String strUserID = null;
 		String strPassword = null;
 
+		String strKey =null;
 		int intDBConfig = Convert.ToInt32(SysQueryMethod.get("intDBConfig"));
 		if (!Convert.isNullOrEmpty(Convert.ToString(SysQueryMethod.get("strServerName")))) {
 			// 当直接指定时获取直接指定数据库
@@ -238,6 +249,7 @@ public class SystemServiceImpl implements SystemService {
 			strPassword = Convert.ToString(SysQueryMethod.get("strPassword"));
 		} else if (intDBConfig != 0) {
 			config = this.getDBConfig(intDBConfig);
+			strKey =Convert.ToString(  config.get("strKey"));
 
 		}
 		if (config != null && config.size() > 0) {
@@ -247,6 +259,7 @@ public class SystemServiceImpl implements SystemService {
 			strDBName = Convert.ToString(config.get("strDBName"));
 			strUserID = Convert.ToString(config.get("strUserID"));
 			strPassword = Convert.ToString(config.get("strPassword"));
+			strKey =Convert.ToString(  config.get("strKey"));
 
 		} else {
 			// 系统默认级别路径
@@ -258,11 +271,11 @@ public class SystemServiceImpl implements SystemService {
 			strPassword = this.strPassword;
 		}
 		// type = eSqlType.mybatis;
-
 		String strMethod = SysQueryMethod.get("strMethod").toString();
 		String strGroupBy = SysQueryMethod.get("strGroupBy").toString();
-		String strFrom = SysQueryMethod.get("strFrom") == null ? "" : SysQueryMethod.get("strFrom").toString();
-
+		String strFrom = Convert.ToString(SysQueryMethod.get("strFrom")); //SysQueryMethod.get("strFrom") == null ? "" : SysQueryMethod.get("strFrom").toString();
+		
+		
 		StringBuilder str = new StringBuilder();
 
 		StringBuilder sql = new StringBuilder(String.format("%s %s", strMethod, strFrom));
@@ -467,26 +480,35 @@ public class SystemServiceImpl implements SystemService {
 			List<?> l = systemDao.getDataByMethod(par);
 			return l;
 		} else {
-			// 业务级别
-			List<?> l =null;
-			switch(type){
-			case JdbcTemplate:
-					l= mssql.getDataByJdbcTemplate(strServerName, strDBName, strUserID, strPassword, builder.toString(),
+			if(!Convert.isNullOrEmpty(strKey) ){ 
+				 SqlSessionFactory yshSqlSessionFactory=(SqlSessionFactory) applicationContext.getBean(String.format("%sSqlSessionFactory", strKey)); 
+				 par.put("strSysSqlKey", builder.toString());
+				 List<?> ll= yshSqlSessionFactory.openSession().selectList("www.kiy.cn.dao.saas.SaaS.getDataByMethod", par);
+				return ll;
+			} else {
+
+				// 业务级别
+				List<?> l = null;
+				switch (type) {
+				case JdbcTemplate:
+					l = mssql.getDataByJdbcTemplate(strServerName, strDBName, strUserID, strPassword,
+							builder.toString(), sqlCount.toString(), par);
+					break;
+				case mybatis:
+					par.put("strSysSqlKey", builder.toString());
+					l = systemDao.getDataByMethod(par);
+
+					break;
+				case Jdbc:
+					if (bPage)
+						sqlCount += " select ?, ?, ?, ? ";
+					l = mssql.getDataByJDBC(strServerName, strDBName, strUserID, strPassword, builder.toString(),
 							sqlCount.toString(), par);
 					break;
-			case mybatis:
-				par.put("strSysSqlKey", builder.toString());
-				l = systemDao.getDataByMethod(par);
-				 
-				break;
-			case Jdbc:
-				if(bPage)
-					sqlCount+=" select ?, ?, ?, ? "; 
-				l= mssql.getDataByJDBC(strServerName, strDBName, strUserID, strPassword, builder.toString(),
-						sqlCount.toString(), par);
-				break;
+				}
+
+				return l;
 			}
-			return l;
 		}
 	}  
 }

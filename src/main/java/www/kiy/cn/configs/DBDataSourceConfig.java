@@ -1,26 +1,40 @@
 package www.kiy.cn.configs;
- 
+
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
+import javax.sql.DataSource;
+
+import org.apache.ibatis.mapping.DatabaseIdProvider;
+import org.apache.ibatis.mapping.VendorDatabaseIdProvider;
+import org.apache.ibatis.session.SqlSessionFactory;
 //import org.apache.tomcat.jdbc.pool.DataSource;
-import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.SqlSessionFactoryBean; 
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Service;
 
-import www.kiy.cn.youki.Convert; 
-@Service 
+import www.kiy.cn.youki.Convert;
+
+@Service
+
 public class DBDataSourceConfig  {
 	
-	//不建议使用
-//	@Autowired 
-//	CacheInfo cacheInfo;
-	private Map<String,DriverManagerDataSource> cacheInfo = new HashMap<String,DriverManagerDataSource>();
-	private  SqlSessionFactoryBean sessionFactory =new SqlSessionFactoryBean(); 
+	// 不建议使用
+	// @Autowired
+	// CacheInfo cacheInfo;
+	private Map<String, DriverManagerDataSource> cacheInfo = new HashMap<String, DriverManagerDataSource>(); 
 	
-	/*public DBDataSourceConfig(){
-		
-	}*/
+	private  Map<String, SqlSessionFactoryBean> sessionFactory= new  HashMap<String,SqlSessionFactoryBean>();
+
+	/*
+	 * public DBDataSourceConfig(){
+	 * 
+	 * }
+	 */
 	public DriverManagerDataSource getMssQLDataSource(String strServerName, String strDBName, String strUserName,
 			String strPassword) throws Exception {
 
@@ -41,13 +55,13 @@ public class DBDataSourceConfig  {
 		 * spring.datasource.password=dev
 		 */
 
-		String strDriverClass = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-		String strJdbcUrl = Convert.ToMssqlJdbcUrl(strServerName, strDBName);
-		return getDataSource(strDriverClass, strJdbcUrl, strUser, strPassword);
+		String strDriverClass = "com.microsoft.sqlserver.jdbc.SQLServerDriver"; 
+		return getDataSource(strDriverClass, strServerName,strDBName, strUser, strPassword);
 	}
 
-	public DriverManagerDataSource getDataSource(String strDriverClass, String strJdbcUrl, String strUser,
+	public DriverManagerDataSource getDataSource(String strDriverClass, String strServerName,String strDBName, String strUser,
 			String strPassword) throws Exception {
+		String strJdbcUrl = Convert.ToMssqlJdbcUrl(strServerName, strDBName);
 		if (strDriverClass == null)
 			strDriverClass = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 		if (strJdbcUrl == null || strJdbcUrl.isEmpty())
@@ -64,27 +78,36 @@ public class DBDataSourceConfig  {
 		if (strUser != null && !strUser.isEmpty())
 			dataSource.setUsername(strUser);
 		if (strPassword != null && !strPassword.isEmpty())
-			dataSource.setPassword(strPassword);
-
-		sessionFactory.setDataSource(dataSource);
-
-		sessionFactory.setDataSource(dataSource);
-		cacheInfo.put(key, dataSource);
+			dataSource.setPassword(strPassword); 
+		 
+		
+		SqlSessionFactoryBean factory=new SqlSessionFactoryBean(); //this.getSqlSessionFactory( strServerName,strDBName);  
+		factory.setDataSource(dataSource);
+//		factory.setTypeHandlersPackage("www.kiy.cn.test"); 
+//		
+//		//添加XML目录
+//        ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+//        //jdbc:sqlserver://192.168.0.91;instanceName=MSSQLSERVER;DatabaseName=Cyt_Mall_Dev;integratedSecurity=false
+//        factory.setMapperLocations(resolver.getResources(String.format("classpath:mybatis/%s/*.xml",strServerName)));
+//        
+//        VendorDatabaseIdProvider  databaseIdProvider  =new VendorDatabaseIdProvider ();
+//        Properties properties = new Properties();
+//        String str= String.format("%s%s", strServerName,strDBName);
+//        properties.put(str, str);
+//        databaseIdProvider.setProperties(properties);    
+//        factory.setDatabaseIdProvider(databaseIdProvider); 
+//		System.out.println("databaseId="+factory.getDatabaseIdProvider().getDatabaseId(dataSource));
+//		sessionFactory.put(str, factory);
+	    cacheInfo.put(key, dataSource); 
 		return dataSource;
 	}
-
-	public String getMssqlDatabaseId(String strServerName, String strDBName, String strUser, String strPassword)
-			throws Exception {
-
-		String strJdbcUrl = Convert.ToMssqlJdbcUrl(strServerName, strDBName);
-		DriverManagerDataSource dataSource = getDataSource(null, strJdbcUrl, strUser, strPassword);
-		String dbId = sessionFactory.getDatabaseIdProvider().getDatabaseId(dataSource);
-		System.out.println("getDBId=" + dbId);
-		return dbId;
-	}
-	/*public SqlSessionFactory sqlSessionFactory() throws Exception {
-		//SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean(); 
-		return sessionFactory.getObject();
-	}*/
+  
+//	public SqlSessionFactoryBean getSqlSessionFactory( String strServerName,String strDBName) throws Exception {
+//		String key = String.format("%s%s", strServerName, strDBName);
+//		if(sessionFactory.containsKey(key))
+//			return sessionFactory.get(key);  
+//        return null;
+//         
+//	}
 
 }
