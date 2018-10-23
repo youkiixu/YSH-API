@@ -26,6 +26,8 @@ public class TestController {
 	@Autowired
 	private SaaSService saas;
 	
+	
+	
 	@Autowired
 	 private ApplicationContext applicationContext;
 	
@@ -43,6 +45,11 @@ public class TestController {
 		 try { 
 			 
  		 try {
+ 			 JMap map = new JMap();
+ 			map.put("a", "123");
+ 			map.put("b", "123");
+ 			map.put("c", "123");
+ 			saas.tbSaaSSave("YSH00000006", "tblA", map);
  			
 				 //	Object obj= Pub.getInstance().InvokeMethod(applicationContext,null,"www.kiy.cn.service.impl", "TestServiceImpl", "tbSaveTest", new JMap());
 			// 	System.out.println(obj);

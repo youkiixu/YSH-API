@@ -1,5 +1,7 @@
 package www.kiy.cn.service.impl;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -15,16 +17,16 @@ import www.kiy.cn.service.SaaSService;
 import www.kiy.cn.service.SystemService;
 import www.kiy.cn.youki.CacheInfo;
 import www.kiy.cn.youki.Convert;
-import www.kiy.cn.youki.JMap; 
+import www.kiy.cn.youki.JMap;
 import www.kiy.cn.youki.Pub;
-import www.kiy.cn.youki.SetLog; 
+import www.kiy.cn.youki.SetLog;
 
 @Service
 public class SaaSServiceImpl implements SaaSService {
 
 	@Autowired
 	private ApplicationContext applicationContext;
-	
+
 	@Autowired
 	private CacheInfo cacheInfo;
 	@Resource
@@ -45,7 +47,7 @@ public class SaaSServiceImpl implements SaaSService {
 
 		JMap configInfo = map.getMap(strAppid != null ? strAppid : strDomain);
 
-		//if (configInfo == null) 
+		// if (configInfo == null)
 		{
 			JMap m = new JMap();
 			m.put("appid", strAppid);
@@ -56,20 +58,19 @@ public class SaaSServiceImpl implements SaaSService {
 				return SetLog.writeMapError("找不到对应配置信息");
 			configInfo = lst.get(0);
 			map.put(strAppid != null ? strAppid : strDomain, configInfo);
-			//cacheInfo.putJMap(HotKey.mDomainConfig, map);
+			// cacheInfo.putJMap(HotKey.mDomainConfig, map);
 		}
 		return configInfo;
 	}
-	
-	
 
 	@Override
-	public Object getSaaSData(String strAppid,JMap map) throws Exception {
-		return getSaaSData( strAppid, map,eSqlType.Jdbc);
+	public Object getSaaSData(String strAppid, JMap map) throws Exception {
+		return getSaaSData(strAppid, map, eSqlType.Jdbc);
 	}
+
 	@Override
-	public Object getSaaSData(String strAppid,JMap map,eSqlType type)  throws Exception {
-			 
+	public Object getSaaSData(String strAppid, JMap map, eSqlType type) throws Exception {
+
 		// TODO Auto-generated method stub
 		JMap param = null;
 
@@ -77,20 +78,12 @@ public class SaaSServiceImpl implements SaaSService {
 			String strMethod = map.get("strMethod").toString();
 			if (map.containsKey("param"))
 				param = SetLog.ObjectToMap(map.get("param")); 
-//			if (param != null && ((param.containsKey("@rowIndex") && param.containsKey("@pageRecord"))
-//					|| (param.containsKey("$rowIndex") && param.containsKey("$pageRecord")))) {
-//				obj = getDataSetByMethod(strAppid,strMethod,param);
-//				
-//			} else {
-//				obj = getDataTableByMethod(strAppid,strMethod, param);
-//			} 
-			 Object  obj=systemService.getDataTableBySystemDao(this.getAppConfig(strAppid),strMethod, param,type);
-			 
-			
-			if(obj.getClass().getName().equals("JMap")){
+			Object obj = systemService.getDataTableBySystemDao(this.getAppConfig(strAppid), strMethod, param, type);
+
+			if (obj.getClass().getName().equals("JMap")) {
 				return obj;
 			}
-			return SetLog.writeMapSuccess("Success", obj); 
+			return SetLog.writeMapSuccess("Success", obj);
 		} else if (map.get("uid") != null || map.get("key") != null) {
 			param = new JMap();
 			JMap mp = new JMap();
@@ -107,7 +100,7 @@ public class SaaSServiceImpl implements SaaSService {
 
 			String uid = Convert.ToString(map.get("uid"));
 			String key = Convert.ToString(map.get("key"));
-			String cKey = uid == null ? String.format("%s%s", strAppid, key) : uid;  
+			String cKey = uid == null ? String.format("%s%s", strAppid, key) : uid;
 			JMap dt = SetLog.ObjectToMap(HotKey.mSysInvokeMethod);
 			if (dt == null) {
 				dt = new JMap();
@@ -116,7 +109,7 @@ public class SaaSServiceImpl implements SaaSService {
 			if (dt.containsKey(cKey)) {
 				InfoMethod = SetLog.ObjectToMap(dt.get(cKey)); // xxxxxx
 			} else {
-				List<JMap> lst = systemService.getDataTableByMethod(HotKey.QgetSysInvokeMethod, map,type);
+				List<JMap> lst = systemService.getDataTableByMethod(HotKey.QgetSysInvokeMethod, map, type);
 
 				if (lst.size() == 0)
 					return SetLog.writeMapError("方法主键不存在");
@@ -134,22 +127,105 @@ public class SaaSServiceImpl implements SaaSService {
 		return null;
 	}
 
-	
 	@Override
-	public List<List<JMap>> getDataSetByMethod(String strAppid,String strMethod, JMap param) throws Exception {
+	public List<List<JMap>> getDataSetByMethod(String strAppid, String strMethod, JMap param) throws Exception {
 		// TODO Auto-generated method stub
 		JMap config = systemService.getDBConfig(strAppid, true);
-		List<List<JMap>> lst= systemService.getDataSetByMethod(config, strMethod, param); 
+		List<List<JMap>> lst = systemService.getDataSetByMethod(config, strMethod, param);
 		return lst;
 	}
 
 	@Override
-	public List<JMap> getDataTableByMethod(String strAppid,String strMethod, JMap param) throws Exception {
+	public List<JMap> getDataTableByMethod(String strAppid, String strMethod, JMap param) throws Exception {
 		// TODO Auto-generated method stub
-		JMap config = this.getAppConfig(strAppid); 
-		List<JMap> lst= systemService.getDataTableByMethod(config, strMethod, param);
-		
+		JMap config = this.getAppConfig(strAppid);
+		List<JMap> lst = systemService.getDataTableByMethod(config, strMethod, param);
+
 		return lst;
 	}
-	
+
+	// /**
+	// *
+	// * @param strAppid
+	// * @param data Map<String,Object>
+	// * @return
+	// */
+	// public JMap tbSaaSSave(String strAppid,JMap data){
+	//
+	// return tbSaaSSave(strAppid,null,data);
+	// }
+
+	/**
+	 * 
+	 * @param strAppid
+	 * @param tblName
+	 *            表名
+	 * @param data
+	 *            数据
+	 * @return
+	 * @throws Exception 
+	 */
+	@Override
+	public JMap tbSaaSSave(String strAppid, String tblName, JMap data) throws Exception {
+		List<JMap> lst = new ArrayList<JMap>();
+		lst.add(data);
+		return tbSaaSSave(strAppid, tblName, lst);
+	}
+	@Override
+	public JMap tbSaaSSave(String strAppid, String tblName, List<JMap> data) throws Exception {
+		JMap map = new JMap();
+		map.put(tblName, data);
+		return tbSaaSSaveForList(strAppid, map);
+	}
+
+	/**
+	 * 不做委托特殊业务保存自行解决
+	 * 
+	 * @param strAppid
+	 * @param data
+	 *            Map<String,List<JMap>> String=tblName,List<JMap>=data
+	 * @return
+	 * @throws Exception 
+	 */
+	@Override
+	public JMap tbSaaSSaveForList(String strAppid, JMap data) throws Exception {
+		return tbSaaSSaveForList(strAppid, data, eSqlType.Jdbc);
+	}
+	@Override
+	public JMap tbSaaSSaveForList(String strAppid, JMap data, eSqlType type) throws Exception {
+
+	 
+		return tbSaaSSave( strAppid,null, data,null,null);
+	}
+	@Override
+	public JMap tbSaaSSave(String strAppid, String returnID_tblName, JMap data, String tblHeadName, String tblColumns)
+			throws Exception {
+		JMap relation = new JMap();
+		if(tblHeadName!=null){
+			relation.put(tblHeadName, tblColumns);
+		} 
+		return tbSaaSSave(strAppid, null, returnID_tblName, data, relation);
+	}
+	@Override
+	public JMap tbSaaSSave(String strAppid, String strDBName, String returnID_tblName, JMap data, JMap relation)
+			throws Exception {
+		// TODO Auto-generated method stub
+
+		JMap config = this.systemService.getDBConfig(strAppid, strDBName, true);
+
+		return this.systemService.tbSave( config,  returnID_tblName,  data,  relation);
+	}
+
+	// /**
+	// *
+	// * @param strAppid
+	// * @param returnID_tblName 感觉不需要
+	// * @param data
+	// * @return
+	// */
+	// public JMap tbSaaSSaveForList(String strAppid,String returnID_tblName,
+	// JMap data) {
+	// return null;
+	// }
+
 }

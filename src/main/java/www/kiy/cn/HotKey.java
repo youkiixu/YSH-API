@@ -31,6 +31,10 @@ public class HotKey {
 	 */
 	public static final String mSysInvokeMethod = "mSysInvokeMethod";
 	
+	/**
+	 * 实体数据缓存
+	 */
+	public static final String lstTableEntity = "lstTableEntity";
 	/*******************************************缓存  start********************************************************/
 
 	
@@ -41,7 +45,8 @@ public class HotKey {
 	public static final String QgetSysInvokeMethod = "getSysInvokeMethod";
 
 	public static final String QSysDBConfigInfo = "SysDBConfigInfo";
-	
+	/*******************************************查询方法  end********************************************************/
+
 	//public static final String 
 
 	/**
@@ -50,7 +55,7 @@ public class HotKey {
 	 *
 	 */
 	public static enum eSqlType {
-		Jdbc, JdbcTemplate, mybatis
+		Jdbc, JdbcTemplate, Mybatis
 	}
 
 	/**
@@ -62,5 +67,13 @@ public class HotKey {
 	 */
 	public enum eRSAType {
 		privateKey, publicKey
+	}
+	/**
+	 * 执行命令类型
+	 * @author Administrator
+	 *增删改查
+	 */
+	public enum eCmdType{
+		insert,delete,update
 	}
 }

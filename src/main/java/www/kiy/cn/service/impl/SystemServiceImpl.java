@@ -1,7 +1,11 @@
 package www.kiy.cn.service.impl;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import javax.annotation.Resource;
 
 import org.apache.ibatis.annotations.ResultMap;
@@ -13,9 +17,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import www.kiy.cn.HotKey;
 import www.kiy.cn.HotKey.eSqlType;
-import www.kiy.cn.dao.saas.SelectProviderDao;
+import www.kiy.cn.dao.saas.SqlProviderDao;
 import www.kiy.cn.dao.saas.SaaS;
 import www.kiy.cn.service.MssqlService;
+import www.kiy.cn.service.SaveService;
 import www.kiy.cn.service.SystemService;
 import www.kiy.cn.youki.CacheInfo;
 import www.kiy.cn.youki.Convert;
@@ -43,6 +48,8 @@ public class SystemServiceImpl implements SystemService {
 
 	@Autowired
 	 private ApplicationContext applicationContext;
+	@Autowired
+	 private SaveService saveService;
 	
 	@Override
 	public JMap getDBConfig(int DBId) throws Exception {
@@ -211,7 +218,7 @@ public class SystemServiceImpl implements SystemService {
 	@Override
 	public List<?> getDataTableBySystemDao(JMap config, String strName, final JMap map, eSqlType type)
 			throws Exception {
-		type = eSqlType.mybatis;
+		type = eSqlType.Jdbc;
 
 		JMap m = cacheInfo.getMap(HotKey.mSysQueryMethodConfig);
 		if (m == null || m.size() == 0) {
@@ -347,7 +354,7 @@ public class SystemServiceImpl implements SystemService {
 							strFliterParam2 = strFliterParam.replace("@", ":");
 							par.put(strFliterParam.replace("@", ""), objVal);
 							break;
-						case mybatis:
+						case Mybatis:
 							strFliterParam2 = String.format("#{%s}", strFliterParam.replace("@", ""));
 							par.put(strFliterParam.replace("@", ""), objVal);
 							break;
@@ -395,7 +402,7 @@ public class SystemServiceImpl implements SystemService {
 		boolean bPage= Convert.ToBoolean(SysQueryMethod.get("bPage"));
 		
 		if (!bPage) {
-			builder.append(sql.toString()).append(condition).append(" ").append(strGroupBy);
+			builder.append(sql).append(condition).append(" ").append(strGroupBy);
 		} else {
 			Object rowIndex = 1;
 			Object pageRecord = 15;
@@ -426,7 +433,7 @@ public class SystemServiceImpl implements SystemService {
 				p=String.format("%s", size++);
 				par.put(p, pageRecord);
 				break;
-			case mybatis:
+			case Mybatis:
 			case JdbcTemplate:
 				if(eSqlType.JdbcTemplate==type){
 					sRowIndex = ":rowIndex";
@@ -461,8 +468,8 @@ public class SystemServiceImpl implements SystemService {
 						String.format("  top %s   ", Convert.ToInt32(rowIndex) * Convert.ToInt32(pageRecord)));
 
 			builder.append("select * from ( \r\n");
-			builder.append(sql.toString());
-			builder.append(condition.toString());
+			builder.append(sql);
+			builder.append(condition);
 			builder.append(strGroupBy);
 			builder.append(" ) t  \r\n where ");
 
@@ -473,42 +480,173 @@ public class SystemServiceImpl implements SystemService {
 					.append(") \r\n");
  
 		}
-		if (strServerName == null && (config == null || config.size() == 0)) {
-			// 系统级别
-			builder.append(sqlCount);
-			par.put("strSysSqlKey", builder.toString());
-			List<?> l = systemDao.getDataByMethod(par);
-			return l;
+		return QuerySql( strKey,  strServerName,  strDBName,  strUserID, strPassword,builder.toString(),sqlCount,bPage , par,type);
+//		if (strServerName == null && (config == null || config.size() == 0)) {
+//			// 系统级别
+//			builder.append(sqlCount);
+//			par.put("strSysSqlKey", builder.toString());
+//			List<?> l = systemDao.getDataByMethod(par);
+//			return l;
+//		} else {
+			
+			
+//			if(!Convert.isNullOrEmpty(strKey) ){ 
+//				 SqlSessionFactory yshSqlSessionFactory=(SqlSessionFactory) applicationContext.getBean(String.format("%sSqlSessionFactory", strKey)); 
+//				 par.put("strSysSqlKey", builder.toString());
+//				 List<?> ll= yshSqlSessionFactory.openSession().selectList("www.kiy.cn.dao.saas.SaaS.getDataByMethod", par);
+//				return ll;
+//			} else {
+				
+//
+//				// 业务级别
+//				List<?> l = null;
+//				switch (type) {
+//				case JdbcTemplate:
+//					l = mssql.getDataByJdbcTemplate(strServerName, strDBName, strUserID, strPassword,
+//							builder.toString(), sqlCount.toString(), par);
+//					break;
+//				case Mybatis:
+//					par.put("strSysSqlKey", builder.toString());
+//					l = systemDao.getDataByMethod(par);
+//
+//					break;
+//				case Jdbc:
+//					if (bPage)
+//						sqlCount += " select ?, ?, ?, ? ";
+//					l = mssql.getDataByJDBC(strServerName, strDBName, strUserID, strPassword, builder.toString(),
+//							sqlCount.toString(), par);
+//					break;
+//				} 
+				//return l;
+//			}
+//		}
+	}
+	
+	@Override
+	public List<?> QuerySql(JMap config,String sql,JMap par) throws Exception{
+		return QuerySql(config,sql,par,eSqlType.Mybatis);
+	}
+	@Override
+	public List<?> QuerySql(JMap config,String sql,JMap par,eSqlType type) throws Exception{
+		return QuerySql(config,sql,null,false,par,type);
+	}
+	@Override
+	public List<?> QuerySql(JMap config, String sql, String sqlCount, boolean bPage, JMap par, eSqlType type)
+			throws Exception {
+
+		return QuerySql(Convert.ToString(config.get("strKey")), Convert.ToString(config.get("strServerName")),
+				Convert.ToString(config.get("strDBName")), Convert.ToString(config.get("strUserID")),
+				Convert.ToString(config.get("strPassword")), sql, sqlCount, bPage, par, type);
+	}
+	@Override
+	public List<?> QuerySql(String strKey, String strServerName, String strDBName, String strUserID,
+			String strPassword, String sql, String sqlCount, boolean bPage, JMap par, eSqlType type) throws Exception {
+
+		if ( type==eSqlType.Mybatis &&( !Convert.isNullOrEmpty(strKey) || ( Convert.isNullOrEmpty(strServerName) &&Convert.isNullOrEmpty(strDBName)) )) {
+			if(Convert.isNullOrEmpty(strKey))
+				strKey="default";
+			SqlSessionFactory yshSqlSessionFactory = (SqlSessionFactory) applicationContext
+					.getBean(String.format("%sSqlSessionFactory", strKey));
+			par.put("strSysSqlKey", sql);
+			List<?> ll = yshSqlSessionFactory.openSession().selectList("www.kiy.cn.dao.saas.SaaS.getDataByMethod", par);
+			return ll;
 		} else {
-			if(!Convert.isNullOrEmpty(strKey) ){ 
-				 SqlSessionFactory yshSqlSessionFactory=(SqlSessionFactory) applicationContext.getBean(String.format("%sSqlSessionFactory", strKey)); 
-				 par.put("strSysSqlKey", builder.toString());
-				 List<?> ll= yshSqlSessionFactory.openSession().selectList("www.kiy.cn.dao.saas.SaaS.getDataByMethod", par);
-				return ll;
-			} else {
 
-				// 业务级别
-				List<?> l = null;
-				switch (type) {
-				case JdbcTemplate:
-					l = mssql.getDataByJdbcTemplate(strServerName, strDBName, strUserID, strPassword,
-							builder.toString(), sqlCount.toString(), par);
-					break;
-				case mybatis:
-					par.put("strSysSqlKey", builder.toString());
-					l = systemDao.getDataByMethod(par);
+			// 业务级别
+			List<?> l = null;
+			switch (type) {
+			case JdbcTemplate:
+				l = mssql.getDataByJdbcTemplate(strServerName, strDBName, strUserID, strPassword, sql, sqlCount, par);
+				break;
+			case Mybatis:
+				par.put("strSysSqlKey", sql);
+				l = systemDao.getDataByMethod(par);
 
-					break;
-				case Jdbc:
-					if (bPage)
-						sqlCount += " select ?, ?, ?, ? ";
-					l = mssql.getDataByJDBC(strServerName, strDBName, strUserID, strPassword, builder.toString(),
-							sqlCount.toString(), par);
-					break;
-				}
-
-				return l;
-			}
+				break;
+			case Jdbc:
+				if (bPage)
+					sqlCount += " select ?, ?, ?, ? ";
+				l = mssql.getDataByJDBC(strServerName, strDBName, strUserID, strPassword, sql,sqlCount,
+						par);
+				break;
+			} 
+			return l;
 		}
-	}  
+
+	}
+	
+	
+	
+	@Override
+	public JMap tbSave(JMap config,String returnID_tblName, JMap data, JMap relation)
+			throws Exception {
+		// TODO Auto-generated method stub
+		
+		if (data == null || data.size() == 0)
+			return SetLog.writeMapError("无效数据");
+		
+		Map<String,List<JMap>> dt = new HashMap<String,List<JMap>>();
+		Map<String,String[]> dicRelation= new HashMap<String,String[]>();
+		int i = 0;
+		if (relation != null && relation.size() > 0) {
+		
+			Iterator<String> e = relation.keySet().iterator();
+
+			while (e.hasNext()) {
+				e.next();
+				String tHName = e.next(); // LogisticsOrder
+				String tBName = relation.get(tHName).toString();
+				if (Convert.isNullOrEmpty(tHName))
+					return SetLog.writeMapError(String.format("保存失败; 第[%s]表,未赋予名称", i + 1));
+				List<JMap> lst = SetLog.ObjectToListMap(data.get(tHName));
+				if (lst == null || lst.size() == 0)
+					return SetLog.writeMapError(String.format("表%s无数据", tHName));
+				dt.put(tHName, lst);
+				data.remove(tHName);
+				String[] ts = tBName.split("|");
+				for (int j = 0; j < ts.length; j++) {
+					String[] ss = ts[j].split(".");//ts[j]=LogisticsOrder_List.LogisticsNO_PKey
+					i++;// i=1
+					List<JMap> l = SetLog.ObjectToListMap(data.get(ss[0]));
+					if (l == null || l.size() == 0)
+						return SetLog.writeMapError(String.format("表%s无数据", ss[0]));
+					if (!l.get(0).containsKey(ss[1])) {
+						l.forEach(tmp -> {
+							if (!tmp.containsKey(ss[1]))
+								tmp.put(ss[1], null); //增加LogisticsNO_PKey字段 
+						}); 
+					}
+					dt.put(ss[0], l);
+					data.remove(ss[0]); 
+					dicRelation.put(ss[0], new String[]{tHName,ss[1]} );
+					//表 LogisticsOrder_List:LogisticsOrder, LogisticsNO_PKey :
+				}
+			}
+			i++;
+		}
+		Iterator<String> e2= data.keySet().iterator();
+		while(e2.hasNext()){
+			String  tName= e2.next();
+			if(Convert.isNullOrEmpty(tName)){
+				return SetLog.writeMapError(String.format("保存失败; 第[%s]表,未赋予名称",i+1));
+			}
+			List<JMap> lst = SetLog.ObjectToListMap(data.get(tName));
+			if(lst==null || lst.size()==0)
+				return SetLog.writeMapError(String.format("表%s无数据", tName));
+			
+			dt.put(tName,  lst);
+			i++;
+		}
+		//  //表排序成 , LogisticsOrder , LogisticsOrder_List,LogisticsRecords
+		if( config!=null  ) 
+			return saveService.tbSaveByJDBC(config, dicRelation, dt);
+		return null;
+	}
+	
+//	public List<JMap> getDataTable(,String sqlCondition,JMap param){
+//		if(strKey==null){
+//			
+//		}
+//		return null;
+//	}
 }

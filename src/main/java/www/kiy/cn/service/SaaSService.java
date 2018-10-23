@@ -19,4 +19,18 @@ public interface SaaSService {
 
 	Object getSaaSData(String strAppid, JMap map, eSqlType type) throws Exception;
 
+	JMap tbSaaSSave(String strAppid, String tblName, JMap data) throws Exception;
+
+	JMap tbSaaSSave(String strAppid, String tblName, List<JMap> data) throws Exception;
+
+	JMap tbSaaSSaveForList(String strAppid, JMap data) throws Exception;
+
+	JMap tbSaaSSaveForList(String strAppid, JMap data, eSqlType type) throws Exception;
+
+	JMap tbSaaSSave(String strAppid, String returnID_tblName, JMap data, String tblHeadName, String tblColumns)
+			throws Exception;
+
+	JMap tbSaaSSave(String strAppid, String strDBName, String returnID_tblName, JMap data, JMap relation)
+			throws Exception;
+
 }

@@ -24,6 +24,8 @@ public class Convert {
 		String str = String.valueOf(obj);
 		if (str == null || str.equals("0"))
 			return false;
+		if(str.equals("1"))
+			return true;
 		return Boolean.valueOf(str);
 	}
 
