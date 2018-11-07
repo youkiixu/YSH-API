@@ -1,8 +1,7 @@
 package www.kiy.cn.service;
 
 import java.sql.Connection;
-
-import org.apache.ibatis.session.SqlSessionFactory;
+ 
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
  
 

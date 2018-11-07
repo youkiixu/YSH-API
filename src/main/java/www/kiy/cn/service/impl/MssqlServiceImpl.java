@@ -43,10 +43,30 @@ public class MssqlServiceImpl implements MssqlService {
 			strPassword = "";
 		}
 		MssqlPoolService poolService = getConnectPoolService(strServerName, strDBName, strUserID, strPassword);
-
+		
 		return poolService.getConnection();
 	}
-
+	
+	
+	@Override
+	public void releaseCN(JMap config,Connection cn){
+		if(config!=null){
+			MssqlPoolService poolService = getConnectPoolService(config);
+			if(poolService!=null){
+				poolService.release(cn);
+				return;
+			}
+		}
+		try {
+			cn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		cn =null;
+		
+	}  
+	
 	@Override
 	public List<?> getDataTableByMethod(JMap config, String strSql, JMap param) throws Exception {
 		return getDataTableByMethod(Convert.ToString(config.get("strServerName")),
@@ -101,8 +121,14 @@ public class MssqlServiceImpl implements MssqlService {
 		lst.add(lst2);
 		return lst;
 	}
-
-	private MssqlPoolService getConnectPoolService(String strServerName, String strDBName, String strUserID,
+	@Override
+	public MssqlPoolService getConnectPoolService(JMap config) {
+		return getConnectPoolService(Convert.ToString(config.get("strServerName")),
+				Convert.ToString(config.get("strDBName")), Convert.ToString(config.get("strUserID")),
+				Convert.ToString(config.get("strPassword")));
+	}
+	@Override
+	public MssqlPoolService getConnectPoolService(String strServerName, String strDBName, String strUserID,
 			String strPassword) {
 
 		String key = String.format("%s%s%s%s", strServerName, strDBName, strUserID, strPassword);
@@ -201,7 +227,7 @@ public class MssqlServiceImpl implements MssqlService {
 	private List<JMap> getResultSet(ResultSet res) throws Exception {
 		List<JMap> lst = new ArrayList<JMap>();
 		//try {
-			int intRowCount = res.getRow();
+			//int intRowCount = res.getRow();
 			//if (intRowCount > 0) 
 			{ 
 				ResultSetMetaData resultSetMetaData = res.getMetaData();
@@ -232,6 +258,6 @@ public class MssqlServiceImpl implements MssqlService {
 //		}
 //		res = null;
 		return lst;
-	}
+	} 
 
 }

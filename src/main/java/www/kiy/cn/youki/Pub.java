@@ -10,10 +10,14 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.ibatis.jdbc.SQL;
 import org.springframework.context.ApplicationContext;
+
+import www.kiy.cn.HotKey.eCmdType;
 
 public class Pub {
 	private static final Pub pub = new Pub();
@@ -181,5 +185,246 @@ public class Pub {
 		} catch (Exception ex) {
 		}
 		return props;
+	}
+	
+	
+	public String PrepareSaveSqlByMybatis(String tblName, final JMap map, eCmdType cmdType) {
+
+		return PrepareSaveSqlByMybatis(tblName, map, cmdType);
+	}
+
+	/**
+	 * 
+	 * @param tblName
+	 * @param map
+	 * @param cmdType
+	 * @param condition
+	 *            操作类型为update 时不能为空
+	 * @return
+	 */
+	public String PrepareSaveSqlByMybatis(String tblName, final JMap map, eCmdType cmdType, JMap condition) {
+
+		String strSql = null;
+		if (map.containsKey("strSysSqlKey"))
+			strSql = map.getWithRemoveKey("strSysSqlKey").toString();
+		else {
+			strSql = new SQL() {
+				{
+					String rowState=Convert.ToString( map.getWithRemoveKey("rowState"));
+					eCmdType t = cmdType;
+					if (!Convert.isNullOrEmpty(rowState)) {
+
+						switch (rowState) {
+						case "A":
+							t = eCmdType.insert;
+							break;
+						case "D":
+							t = eCmdType.delete;
+							break;
+						case "M":
+							t = eCmdType.update;
+							break;
+
+						}
+					}
+					Iterator<String> iterator = map.keySet().iterator();
+					switch (t) {
+					case insert:
+						INSERT_INTO(tblName);
+						while (iterator.hasNext()) {
+							String col = iterator.next();
+							INTO_COLUMNS(col);
+							INTO_VALUES(String.format("#{%s}", col));
+						}
+						break;
+					case delete:
+						DELETE_FROM(tblName);
+						while (iterator.hasNext()) {
+							String col = iterator.next();
+							WHERE(String.format("%s=#{%s}", col, col));
+						}
+						break;
+					case update:
+						UPDATE(tblName);
+						while (iterator.hasNext()) {
+							String col = iterator.next();
+							SET(String.format("%s=#{%s}", col, col));
+						}
+						if (condition == null || condition.size() == 0)
+							WHERE("1!=1");
+						else {
+							Iterator<String> cd = condition.keySet().iterator();
+							while (cd.hasNext()) {
+								String col = cd.next();
+								WHERE(String.format("%s=#{%s}", col, col));
+							}
+						}
+						break;
+					default:
+						break;
+					}
+				}
+			}.toString();
+		}
+		return strSql;
+	}
+
+	public String PrepareSaveSqlByJdbcTemplate(String tblName, final JMap map, eCmdType cmdType) {
+
+		return PrepareSaveSqlByJdbcTemplate(tblName, map, cmdType);
+	}
+
+	/**
+	 * 
+	 * @param tblName
+	 * @param map
+	 * @param cmdType
+	 * @param condition
+	 *            操作类型为update 时不能为空
+	 * @return
+	 */
+	public String PrepareSaveSqlByJdbcTemplate(String tblName, final JMap map, eCmdType cmdType, JMap condition) {
+
+		String strSql = null;
+		if (map.containsKey("strSysSqlKey"))
+			strSql = map.getWithRemoveKey("strSysSqlKey").toString();
+		else {
+			strSql = new SQL() {
+				{
+					String rowState=Convert.ToString( map.getWithRemoveKey("rowState"));
+					eCmdType t = cmdType;
+					if (!Convert.isNullOrEmpty(rowState)) {
+
+						switch (rowState) {
+						case "A":
+							t = eCmdType.insert;
+							break;
+						case "D":
+							t = eCmdType.delete;
+							break;
+						case "M":
+							t = eCmdType.update;
+							break;
+
+						}
+					}
+					Iterator<String> iterator = map.keySet().iterator();
+					switch (t) {
+					case insert:
+						INSERT_INTO(tblName);
+						while (iterator.hasNext()) {
+							String col = iterator.next();
+							INTO_COLUMNS(col);
+							INTO_VALUES(String.format(":%s", col));
+						}
+						break;
+					case delete:
+						DELETE_FROM(tblName);
+						while (iterator.hasNext()) {
+							String col = iterator.next();
+							WHERE(String.format("%s=:%s", col, col));
+						}
+						break;
+					case update:
+						UPDATE(tblName);
+						while (iterator.hasNext()) {
+							String col = iterator.next();
+							SET(String.format("%s=:%s", col, col));
+						}
+						if (condition == null || condition.size() == 0)
+							WHERE("1!=1");
+						else {
+							Iterator<String> cd = condition.keySet().iterator();
+							while (cd.hasNext()) {
+								String col = cd.next();
+								WHERE(String.format("%s=:%s", col, col));
+							}
+						}
+						break;
+					default:
+						break;
+					}
+				}
+			}.toString();
+		}
+		return strSql;
+	}
+	
+
+	 
+	/**
+	 * 
+	 * @param tblName
+	 * @param map
+	 * @param cmdType
+	 * @param condition
+	 *            操作类型为update 时不能为空
+	 * @return
+	 */
+	public String PrepareSaveSqlByJdbc(String tblName, final JMap map, eCmdType cmdType, JMap condition) {
+
+		String strSql = null;
+		if (map.containsKey("strSysSqlKey"))
+			strSql = map.getWithRemoveKey("strSysSqlKey").toString();
+		else {
+			strSql = new SQL() {
+				{
+					String rowState=Convert.ToString( map.getWithRemoveKey("rowState"));
+					eCmdType t = cmdType;
+					if (!Convert.isNullOrEmpty(rowState)) {
+
+						switch (rowState) {
+						case "A":
+							t = eCmdType.insert;
+							break;
+						case "D":
+							t = eCmdType.delete;
+							break;
+						case "M":
+							t = eCmdType.update;
+							break;
+
+						}
+					}
+					Iterator<String> iterator = map.keySet().iterator();
+					switch (t) {
+					case insert:
+						INSERT_INTO(tblName);
+						while (iterator.hasNext()) {
+							String col = iterator.next();
+							INTO_COLUMNS(col);
+							INTO_VALUES("?");
+						}
+						break;
+					case delete:
+						DELETE_FROM(tblName);
+						while (iterator.hasNext()) {
+							String col = iterator.next();
+							WHERE(String.format("%s=?", col));
+						}
+						break;
+					case update:
+						UPDATE(tblName);
+						while (iterator.hasNext()) {
+							String col = iterator.next();
+							SET(String.format("%s=?", col));
+						}
+						if (condition == null || condition.size() == 0)
+							WHERE("1!=1");
+						else {
+							Iterator<String> cd = condition.keySet().iterator();
+							while (cd.hasNext()) {
+								String col = cd.next();
+								WHERE(String.format("%s=?", col));
+							}
+						}
+						break;
+					default:
+						break;
+					}
+				}
+			}.toString();
+		}
+		return strSql;
 	}
 }

@@ -27,5 +27,12 @@ public interface MssqlService {
 
 	List<?> getDataByJDBC(String strServerName, String strDBName, String strUserID, String strPassword, String strSql,
 			String strSqlCount, JMap par) throws Exception;
+
+	void releaseCN(JMap config, Connection cn);
+
+	MssqlPoolService getConnectPoolService(JMap config);
+
+	MssqlPoolService getConnectPoolService(String strServerName, String strDBName, String strUserID,
+			String strPassword);
  
 }

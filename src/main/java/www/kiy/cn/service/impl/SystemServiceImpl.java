@@ -1,23 +1,20 @@
 package www.kiy.cn.service.impl;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement; 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
+import java.util.Map; 
 import javax.annotation.Resource;
-
-import org.apache.ibatis.annotations.ResultMap;
-import org.apache.ibatis.annotations.SelectProvider;
+ 
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import www.kiy.cn.HotKey;
-import www.kiy.cn.HotKey.eSqlType;
-import www.kiy.cn.dao.saas.SqlProviderDao;
+import www.kiy.cn.HotKey.eSqlType; 
 import www.kiy.cn.dao.saas.SaaS;
 import www.kiy.cn.service.MssqlService;
 import www.kiy.cn.service.SaveService;
@@ -25,8 +22,7 @@ import www.kiy.cn.service.SystemService;
 import www.kiy.cn.youki.CacheInfo;
 import www.kiy.cn.youki.Convert;
 import www.kiy.cn.youki.JMap;
-import www.kiy.cn.youki.ListMap;
-import www.kiy.cn.youki.Pub;
+import www.kiy.cn.youki.ListMap; 
 import www.kiy.cn.youki.SetLog;
 
 @Service
@@ -48,8 +44,7 @@ public class SystemServiceImpl implements SystemService {
 
 	@Autowired
 	 private ApplicationContext applicationContext;
-	@Autowired
-	 private SaveService saveService;
+	
 	
 	@Override
 	public JMap getDBConfig(int DBId) throws Exception {
@@ -545,8 +540,7 @@ public class SystemServiceImpl implements SystemService {
 		if ( type==eSqlType.Mybatis &&( !Convert.isNullOrEmpty(strKey) || ( Convert.isNullOrEmpty(strServerName) &&Convert.isNullOrEmpty(strDBName)) )) {
 			if(Convert.isNullOrEmpty(strKey))
 				strKey="default";
-			SqlSessionFactory yshSqlSessionFactory = (SqlSessionFactory) applicationContext
-					.getBean(String.format("%sSqlSessionFactory", strKey));
+			SqlSessionFactory yshSqlSessionFactory = (SqlSessionFactory) applicationContext.getBean(String.format("%sSqlSessionFactory", strKey));
 			par.put("strSysSqlKey", sql);
 			List<?> ll = yshSqlSessionFactory.openSession().selectList("www.kiy.cn.dao.saas.SaaS.getDataByMethod", par);
 			return ll;
@@ -576,72 +570,6 @@ public class SystemServiceImpl implements SystemService {
 	}
 	
 	
-	
-	@Override
-	public JMap tbSave(JMap config,String returnID_tblName, JMap data, JMap relation)
-			throws Exception {
-		// TODO Auto-generated method stub
-		
-		if (data == null || data.size() == 0)
-			return SetLog.writeMapError("无效数据");
-		
-		Map<String,List<JMap>> dt = new HashMap<String,List<JMap>>();
-		Map<String,String[]> dicRelation= new HashMap<String,String[]>();
-		int i = 0;
-		if (relation != null && relation.size() > 0) {
-		
-			Iterator<String> e = relation.keySet().iterator();
-
-			while (e.hasNext()) {
-				e.next();
-				String tHName = e.next(); // LogisticsOrder
-				String tBName = relation.get(tHName).toString();
-				if (Convert.isNullOrEmpty(tHName))
-					return SetLog.writeMapError(String.format("保存失败; 第[%s]表,未赋予名称", i + 1));
-				List<JMap> lst = SetLog.ObjectToListMap(data.get(tHName));
-				if (lst == null || lst.size() == 0)
-					return SetLog.writeMapError(String.format("表%s无数据", tHName));
-				dt.put(tHName, lst);
-				data.remove(tHName);
-				String[] ts = tBName.split("|");
-				for (int j = 0; j < ts.length; j++) {
-					String[] ss = ts[j].split(".");//ts[j]=LogisticsOrder_List.LogisticsNO_PKey
-					i++;// i=1
-					List<JMap> l = SetLog.ObjectToListMap(data.get(ss[0]));
-					if (l == null || l.size() == 0)
-						return SetLog.writeMapError(String.format("表%s无数据", ss[0]));
-					if (!l.get(0).containsKey(ss[1])) {
-						l.forEach(tmp -> {
-							if (!tmp.containsKey(ss[1]))
-								tmp.put(ss[1], null); //增加LogisticsNO_PKey字段 
-						}); 
-					}
-					dt.put(ss[0], l);
-					data.remove(ss[0]); 
-					dicRelation.put(ss[0], new String[]{tHName,ss[1]} );
-					//表 LogisticsOrder_List:LogisticsOrder, LogisticsNO_PKey :
-				}
-			}
-			i++;
-		}
-		Iterator<String> e2= data.keySet().iterator();
-		while(e2.hasNext()){
-			String  tName= e2.next();
-			if(Convert.isNullOrEmpty(tName)){
-				return SetLog.writeMapError(String.format("保存失败; 第[%s]表,未赋予名称",i+1));
-			}
-			List<JMap> lst = SetLog.ObjectToListMap(data.get(tName));
-			if(lst==null || lst.size()==0)
-				return SetLog.writeMapError(String.format("表%s无数据", tName));
-			
-			dt.put(tName,  lst);
-			i++;
-		}
-		//  //表排序成 , LogisticsOrder , LogisticsOrder_List,LogisticsRecords
-		if( config!=null  ) 
-			return saveService.tbSaveByJDBC(config, dicRelation, dt);
-		return null;
-	}
 	
 //	public List<JMap> getDataTable(,String sqlCondition,JMap param){
 //		if(strKey==null){

@@ -33,4 +33,6 @@ public interface SaaSService {
 	JMap tbSaaSSave(String strAppid, String strDBName, String returnID_tblName, JMap data, JMap relation)
 			throws Exception;
 
+	JMap tbSaaSSave(JMap config, String returnID_tblName, JMap data, JMap relation, eSqlType type) throws Exception;
+
 }

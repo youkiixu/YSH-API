@@ -5,9 +5,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
-
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.mybatis.spring.SqlSessionFactoryBean;
+ 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -31,6 +29,7 @@ public class MssqlPoolServiceImpl implements MssqlPoolService {
 	@Value("${spring.datasource.max-active}")
 	private int maxActive;
 	
+	private int intMaxSecond=0;
 
 	 // 空闲连接  
     private List<Connection> free= new Vector<Connection>();  
@@ -116,7 +115,7 @@ public class MssqlPoolServiceImpl implements MssqlPoolService {
         
     }
     
-    
+    @Override
     public synchronized Connection getConnection() throws Exception{ 
     	System.out.println("当前活跃线程数:"+ Convert.ToMssqlJdbcUrl(this.strServerName, this.strDBName));
     	System.out.println("当前空闲线程数:"+free.size());
@@ -140,13 +139,21 @@ public class MssqlPoolServiceImpl implements MssqlPoolService {
                 return cn; 
             }
             else{
-            	
-                wait(1000);
+            	if(intMaxSecond==10){
+            		this.isClose(active.get(0), true);
+            		
+            	}
+            	intMaxSecond++;
+                wait(3000);
                 return getConnection(); 
             } 
         }catch(Exception ex){
-            throw new Exception(ex.toString());
-        } 
+        	if(intMaxSecond==10){
+        		active.remove(0);
+        		threadLocal.remove();
+        	}
+        	throw new Exception(ex.toString());
+        }  
     }
     /* (non-Javadoc)
 	 * @see www.kiy.cn.service.impl.ConnectPoolService#releaseConnection(java.sql.Connection)

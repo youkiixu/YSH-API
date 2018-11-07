@@ -20,9 +20,8 @@ public interface SaveService {
 	
 	public JMap tbSave(JMap config,JMap data,eSqlType type);
 	//public JMap tbSave(String tblName,List<JMap> lst); 
-	  
-	JMap tbSaveByJDBC(JMap config, Map<String, String[]> dicRelation, Map<String, List<JMap>> data) throws Exception;
-	 
+	Map<JMap, Map<String, Map<String, List<JMap>>>>  tbSaaSSaveByJdbc(JMap config, Map<String, String[]> dicRelation, Map<String, List<JMap>> data) throws Exception;
 	
+ 
 	
 }

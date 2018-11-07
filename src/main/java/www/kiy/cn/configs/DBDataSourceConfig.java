@@ -1,19 +1,10 @@
 package www.kiy.cn.configs;
-
-import java.sql.SQLException;
+ 
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.sql.DataSource;
-
-import org.apache.ibatis.mapping.DatabaseIdProvider;
-import org.apache.ibatis.mapping.VendorDatabaseIdProvider;
-import org.apache.ibatis.session.SqlSessionFactory;
+import java.util.Map; 
+ 
 //import org.apache.tomcat.jdbc.pool.DataSource;
-import org.mybatis.spring.SqlSessionFactoryBean; 
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
+import org.mybatis.spring.SqlSessionFactoryBean;  
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +19,7 @@ public class DBDataSourceConfig  {
 	// CacheInfo cacheInfo;
 	private Map<String, DriverManagerDataSource> cacheInfo = new HashMap<String, DriverManagerDataSource>(); 
 	
-	private  Map<String, SqlSessionFactoryBean> sessionFactory= new  HashMap<String,SqlSessionFactoryBean>();
+	//private  Map<String, SqlSessionFactoryBean> sessionFactory= new  HashMap<String,SqlSessionFactoryBean>();
 
 	/*
 	 * public DBDataSourceConfig(){
@@ -61,7 +52,7 @@ public class DBDataSourceConfig  {
 
 	public DriverManagerDataSource getDataSource(String strDriverClass, String strServerName,String strDBName, String strUser,
 			String strPassword) throws Exception {
-		String strJdbcUrl = Convert.ToMssqlJdbcUrl(strServerName, strDBName);
+		String strJdbcUrl = Convert.ToMssqlJdbcUrl(strServerName.toString().replace(',', ':'), strDBName);
 		if (strDriverClass == null)
 			strDriverClass = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 		if (strJdbcUrl == null || strJdbcUrl.isEmpty())

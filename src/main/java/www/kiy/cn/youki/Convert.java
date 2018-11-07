@@ -21,8 +21,10 @@ public class Convert {
 	}
 
 	public static boolean ToBoolean(Object obj) {
+		if(obj==null)
+			return false;
 		String str = String.valueOf(obj);
-		if (str == null || str.equals("0"))
+		if (str.isEmpty()|| str.equals("0"))
 			return false;
 		if(str.equals("1"))
 			return true;

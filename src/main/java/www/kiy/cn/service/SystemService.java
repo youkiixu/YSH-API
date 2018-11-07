@@ -45,8 +45,10 @@ public interface SystemService {
 	List<JMap> getDataTableByMethod(String strName, JMap map, eSqlType type) throws Exception;
  
 
-	JMap tbSave(JMap config, String returnID_tblName, JMap data, JMap relation) throws Exception;
-
+	//JMap tbSaaSSave(JMap config, String returnID_tblName, JMap data, JMap relation) throws Exception;
+	//JMap tbSaaSSave(JMap config, String returnID_tblName, JMap data, JMap relation, eSqlType type) throws Exception;
+	
+	
 	List<?> QuerySql(JMap config, String sql, JMap par) throws Exception;
 
 	List<?> QuerySql(JMap config, String sql, JMap par, eSqlType type) throws Exception;
@@ -55,6 +57,6 @@ public interface SystemService {
 
 	List<?> QuerySql(String strKey, String strServerName, String strDBName, String strUserID, String strPassword,
 			String sql, String sqlCount, boolean bPage, JMap par, eSqlType type) throws Exception;
-	
+
 	
 }
