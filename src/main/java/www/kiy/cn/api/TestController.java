@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import www.kiy.cn.HotKey.eSqlType;
 import www.kiy.cn.service.SaaSService;
-import www.kiy.cn.service.SystemService;
+import www.kiy.cn.service.QueryService;
 import www.kiy.cn.service.TestService;
 import www.kiy.cn.youki.CacheInfo;
 import www.kiy.cn.youki.JMap;
@@ -28,14 +28,9 @@ public class TestController {
 	@Autowired
 	private SaaSService saas;
 	
-	
-	
 	@Autowired
-	 private ApplicationContext applicationContext;
+	 private ApplicationContext applicationContext; 
 	
-//	@Resource(name="YSHSqlSessionTemplate")
-//	SqlSessionTemplate tmp;
-	@Autowired
 	TestService testService;
 	@Autowired
 	CacheInfo cacheInfo;
@@ -107,8 +102,11 @@ public class TestController {
  			
  			
  			JMap LogisticsRecords = new JMap();
- 			LogisticsRecords.put("a", "123");
- 			LogisticsRecords.put("b", "123");
+ 			
+ 			LogisticsRecords.put("Enabled", true);
+ 			LogisticsRecords.put("CreateDate", "2018-11-07 17:25:12.123");
+ 			LogisticsRecords.put("Remark", "333");
+ 			LogisticsRecords.put("Logistics_status", "50");
  			LogisticsRecords.put("OrderID_P", "1");
  			LogisticsRecords.put("OrderId", "1"); 
  			LogisticsRecords.put("AdminId", "123");
@@ -126,7 +124,7 @@ public class TestController {
  			LogisticsRecords2.put("a", "123");
  			LogisticsRecords2.put("b", "123");
  			LogisticsRecords2.put("Id", "123");
- 			LogisticsRecords1.put("OrderID_P", "2");
+ 			LogisticsRecords2.put("OrderID_P", "2");
  			LogisticsRecords2.put("Logistics_status", "50");
 
  			JMap  data  = new JMap();

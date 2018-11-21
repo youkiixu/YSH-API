@@ -2,8 +2,7 @@ package www.kiy.cn.service.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
+import java.sql.ResultSet; 
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +22,7 @@ import www.kiy.cn.dao.saas.SaaS;
 import www.kiy.cn.service.MssqlService;
 import www.kiy.cn.service.SaaSService;
 import www.kiy.cn.service.SaveService;
-import www.kiy.cn.service.SystemService;
+import www.kiy.cn.service.QueryService;
 import www.kiy.cn.youki.CacheInfo;
 import www.kiy.cn.youki.Convert;
 import www.kiy.cn.youki.JMap;
@@ -45,7 +44,7 @@ public class SaaSServiceImpl implements SaaSService {
 	@Resource
 	SaaS systemDao;
 	@Autowired
-	private SystemService systemService;
+	private QueryService systemService;
 
 	public JMap getAppConfig(String appid) {
 		return getAppConfig(appid, null);
@@ -60,7 +59,7 @@ public class SaaSServiceImpl implements SaaSService {
 
 		JMap configInfo = map.getMap(strAppid != null ? strAppid : strDomain);
 
-		// if (configInfo == null)
+		 if (configInfo == null)
 		{
 			JMap m = new JMap();
 			m.put("appid", strAppid);
@@ -71,7 +70,7 @@ public class SaaSServiceImpl implements SaaSService {
 				return SetLog.writeMapError("找不到对应配置信息");
 			configInfo = lst.get(0);
 			map.put(strAppid != null ? strAppid : strDomain, configInfo);
-			// cacheInfo.putJMap(HotKey.mDomainConfig, map);
+			cacheInfo.putJMap(HotKey.mDomainConfig, map);
 		}
 		return configInfo;
 	}
@@ -329,13 +328,14 @@ public class SaaSServiceImpl implements SaaSService {
 					Iterator<String> sqls = sqlAndData.keySet().iterator();
 					while (sqls.hasNext()) {
 						String sql = sqls.next();/// Sql
+						List<JMap> data = sqlAndData.get(sql);// 数据s
 						if (tblName.equals(returnID_tblName) && sql.startsWith("INSERT")) {
 							pst = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS); 
 						} else {
 							if (sql.startsWith("INSERT") && dicRelation != null && dicRelation.containsKey(tblName)) {
 								String[] s = dicRelation.get(tblName);
 								Object v=dd.get(s[0]);
-								sqlAndData.get(sql).forEach(tmp->{
+								data.forEach(tmp->{
 									tmp.put(s[1], v);
 								});
 							}
@@ -343,7 +343,7 @@ public class SaaSServiceImpl implements SaaSService {
 						}
 						
 					
-						List<JMap> data = sqlAndData.get(sql);// 数据s
+						
 						pst.setQueryTimeout(data.size()*30);//每条数据最大执行时间为三十秒
 						
 						Iterator<JMap> ds = data.iterator();
@@ -419,18 +419,5 @@ public class SaaSServiceImpl implements SaaSService {
 			this.mssql.releaseCN(config, cn);
 		}  
 		return res;
-	}
-
-	// /**
-	// *
-	// * @param strAppid
-	// * @param returnID_tblName 感觉不需要
-	// * @param data
-	// * @return
-	// */
-	// public JMap tbSaaSSaveForList(String strAppid,String returnID_tblName,
-	// JMap data) {
-	// return null;
-	// }
-
+	}  
 }

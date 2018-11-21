@@ -1,11 +1,7 @@
 package www.kiy.cn.service.impl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement; 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map; 
 import javax.annotation.Resource;
  
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -16,9 +12,8 @@ import org.springframework.stereotype.Service;
 import www.kiy.cn.HotKey;
 import www.kiy.cn.HotKey.eSqlType; 
 import www.kiy.cn.dao.saas.SaaS;
-import www.kiy.cn.service.MssqlService;
-import www.kiy.cn.service.SaveService;
-import www.kiy.cn.service.SystemService;
+import www.kiy.cn.service.MssqlService; 
+import www.kiy.cn.service.QueryService;
 import www.kiy.cn.youki.CacheInfo;
 import www.kiy.cn.youki.Convert;
 import www.kiy.cn.youki.JMap;
@@ -26,7 +21,7 @@ import www.kiy.cn.youki.ListMap;
 import www.kiy.cn.youki.SetLog;
 
 @Service
-public class SystemServiceImpl implements SystemService {
+public class QueryServiceImpl implements QueryService {
 	@Resource
 	private SaaS systemDao;
 	@Autowired
@@ -476,45 +471,6 @@ public class SystemServiceImpl implements SystemService {
  
 		}
 		return QuerySql( strKey,  strServerName,  strDBName,  strUserID, strPassword,builder.toString(),sqlCount,bPage , par,type);
-//		if (strServerName == null && (config == null || config.size() == 0)) {
-//			// 系统级别
-//			builder.append(sqlCount);
-//			par.put("strSysSqlKey", builder.toString());
-//			List<?> l = systemDao.getDataByMethod(par);
-//			return l;
-//		} else {
-			
-			
-//			if(!Convert.isNullOrEmpty(strKey) ){ 
-//				 SqlSessionFactory yshSqlSessionFactory=(SqlSessionFactory) applicationContext.getBean(String.format("%sSqlSessionFactory", strKey)); 
-//				 par.put("strSysSqlKey", builder.toString());
-//				 List<?> ll= yshSqlSessionFactory.openSession().selectList("www.kiy.cn.dao.saas.SaaS.getDataByMethod", par);
-//				return ll;
-//			} else {
-				
-//
-//				// 业务级别
-//				List<?> l = null;
-//				switch (type) {
-//				case JdbcTemplate:
-//					l = mssql.getDataByJdbcTemplate(strServerName, strDBName, strUserID, strPassword,
-//							builder.toString(), sqlCount.toString(), par);
-//					break;
-//				case Mybatis:
-//					par.put("strSysSqlKey", builder.toString());
-//					l = systemDao.getDataByMethod(par);
-//
-//					break;
-//				case Jdbc:
-//					if (bPage)
-//						sqlCount += " select ?, ?, ?, ? ";
-//					l = mssql.getDataByJDBC(strServerName, strDBName, strUserID, strPassword, builder.toString(),
-//							sqlCount.toString(), par);
-//					break;
-//				} 
-				//return l;
-//			}
-//		}
 	}
 	
 	@Override
@@ -568,13 +524,4 @@ public class SystemServiceImpl implements SystemService {
 		}
 
 	}
-	
-	
-	
-//	public List<JMap> getDataTable(,String sqlCondition,JMap param){
-//		if(strKey==null){
-//			
-//		}
-//		return null;
-//	}
 }

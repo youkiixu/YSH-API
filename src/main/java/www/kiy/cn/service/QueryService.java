@@ -5,7 +5,7 @@ import java.util.List;
 import www.kiy.cn.HotKey.eSqlType;
 import www.kiy.cn.youki.JMap; 
 
-public interface SystemService {
+public interface QueryService {
 
 	List<JMap> getDataTableByMethod(String strName) throws Exception;
 

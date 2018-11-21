@@ -13,17 +13,23 @@ import www.kiy.cn.HotKey;
 import www.kiy.cn.HotKey.eCmdType;
 import www.kiy.cn.HotKey.eSqlType; 
 import www.kiy.cn.service.SaveService;
-import www.kiy.cn.service.SystemService;
+import www.kiy.cn.service.QueryService;
 import www.kiy.cn.youki.CacheInfo;
 import www.kiy.cn.youki.Convert;
 import www.kiy.cn.youki.JMap;
 import www.kiy.cn.youki.Pub;
 import www.kiy.cn.youki.SetLog;
 
+/**
+ * 制作JDBC版保存，不做MyBaits
+ * 
+ * @author Administrator
+ *
+ */
 @Service
 public class SaveServiceImpl implements SaveService {
 	@Autowired
-	private SystemService systemService;
+	private QueryService systemService;
 	
 	@Autowired CacheInfo cacheInfo;
 	
@@ -267,7 +273,8 @@ public class SaveServiceImpl implements SaveService {
 		}
 		 
 		return cns;
-	}
+	} 
+	
 	
 	public JMap beforeSaveCheck(String tblName,int index,Object data,JMap col){
 		String colName=col.get("colName").toString();

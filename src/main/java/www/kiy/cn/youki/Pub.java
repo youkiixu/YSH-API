@@ -268,11 +268,7 @@ public class Pub {
 		}
 		return strSql;
 	}
-
-	public String PrepareSaveSqlByJdbcTemplate(String tblName, final JMap map, eCmdType cmdType) {
-
-		return PrepareSaveSqlByJdbcTemplate(tblName, map, cmdType);
-	}
+ 
 
 	/**
 	 * 

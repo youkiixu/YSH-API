@@ -1,6 +1,7 @@
 package www.kiy.cn.service;
 
 import java.util.List;
+import java.util.Map;
 
 import www.kiy.cn.HotKey.eSqlType;
 import www.kiy.cn.youki.JMap; 
@@ -34,5 +35,7 @@ public interface SaaSService {
 			throws Exception;
 
 	JMap tbSaaSSave(JMap config, String returnID_tblName, JMap data, JMap relation, eSqlType type) throws Exception;
+
+	 
 
 }

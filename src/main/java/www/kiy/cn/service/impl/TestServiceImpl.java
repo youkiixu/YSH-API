@@ -28,13 +28,10 @@ public class TestServiceImpl implements TestService  {
 		m2.put("a", "This is java Test1");   
 		
 		//int obj=	testDao.tbSaveTest(m);
-		//obj +=	testDao.tbSaveTest(m2); 
-		
-	 
-		
+		//obj +=	testDao.tbSaveTest(m2);  
 		//int obj = testDao.insertTableA(m);
 	//	obj = testDao.insertTableA(m2);
-	  //  System.out.println(obj);
+	  //  System.out.println(obj); 
 	    System.out.println(m);	 
 	    System.out.println(m2);
 		
