@@ -1,28 +1,21 @@
 package www.kiy.cn;
   
- 
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
+  
 //import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 
 
-//Mybatis
-//@MapperScan("www.kiy.cn.dao.saas")
-//Servlet 注解
-@ServletComponentScan
+
+//@MapperScan("www.kiy.cn.dao.saas")//Mybatis
+
+//@ServletComponentScan//Servlet 注解
 @SpringBootApplication
 public class RunApplication extends SpringBootServletInitializer {
 
-	public static void main(String[] args) {  
-		System.out.println("Start Spring Boot");  
+	public static void main(String[] args) {   
 		
 		SpringApplication.run(RunApplication.class, args);
 		

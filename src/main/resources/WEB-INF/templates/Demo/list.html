@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title> list page</title>
+</head>
+<body>
+ <div th:replace="Shared/header :: header">...</div>
+    <h3 th:text="${mUser.title}">Welcome to springboot</h3>
+    <div>
+        <!--<a href="/Demo/form.html" th:href="@{/Demo/form}">创建用户</a>-->
+        <a th:href="@{/Demo/form}" >创建用户</a>
+    </div>
+    <table border="1">
+        <thead>
+            <tr>
+                <td>ID</td>
+                <td>Age</td>
+                <td>Name</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:if="${mUser.userList.size()} eq 2">
+                <td colspan="3">有两位用户</td>
+            </tr>
+            <tr th:each="user : ${mUser.userList}">
+                <td th:text="${user.Id}">1</td>
+                <td th:text="${user.strName}">11</td>
+                <td>
+                    <a href="view.html" th:href="@{'/Demo/' + ${user.Id}}"
+                       th:text="${user.strName}">wss</a></td>
+            </tr>
+        </tbody>
+
+    </table>
+
+    <div th:replace="~{Shared/footer :: footer}">...</div>
+</body>
+</html>

@@ -154,9 +154,9 @@ public class TestController {
  					e.printStackTrace();
  			}
 //			 
-			   //JMap map = new JMap();  
-			 //  map.put("@IsHidden",0);
-			 //System.out.println("data="+saas.getDataSetByMethod("YSH00000007", "GetProductComments",map));
+			   JMap map = new JMap();  
+			   map.put("@IsHidden",0);
+			 System.out.println("data="+saas.getDataSetByMethod("YSH00000007", "GetProductComments",map));
 			   
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

@@ -208,7 +208,7 @@ public class QueryServiceImpl implements QueryService {
 	@Override
 	public List<?> getDataTableBySystemDao(JMap config, String strName, final JMap map, eSqlType type)
 			throws Exception {
-		type = eSqlType.Jdbc;
+		type = eSqlType.Mybatis;
 
 		JMap m = cacheInfo.getMap(HotKey.mSysQueryMethodConfig);
 		if (m == null || m.size() == 0) {

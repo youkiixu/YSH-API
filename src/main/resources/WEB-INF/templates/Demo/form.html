@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>form page </title>
+</head>
+<body>
+	<div th:replace="Shared/header :: header">...</div>
+	<h3 th:text="${mUser.title}">Welcome to springboot</h3>
+	<form action="/Demo" th:action="@{/Demo}" method="post"
+		th:object="${mUser.user}">
+		<input type="hidden" name="id" th:value="${mUser.user.Id}"> 名称：<br>
+		<input type="text" name="name" th:value="*{strName}"> <br> 
+		<input type="submit" value="提交">
+	</form> 
+	<div th:replace="~{Shared/footer :: footer}">...</div>
+</body>
+</html>
