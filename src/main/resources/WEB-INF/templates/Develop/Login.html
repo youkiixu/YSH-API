@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<title th:text="${TempData.Title}"></title>
+<script src="/Scripts/vue.js" th:src="@{/Scripts/vue.js}"></script> 
+<script src="/Scripts/axios.min.js" th:src="@{/Scripts/axios.min.js}"></script>  
+<script src="/Develop/test.js" th:src="@{/Develop/test.js}"></script> 
+
+<!-- <script type="text/javascript" th:inline="javascript"> 
+	var ctxPath=[[${#httpServletRequest.getContextPath()}]]+"/thymeleaf}";
+	var title = [[${TempData.Title}]]
+	console.info(ctxPath);
+</script> -->
+</head>
+<body>
+	 <form id="form1" :model="userInfo" :rules="LoginMsg" action="/Login/DevelopLogin" th:action="@{/Login/DevelopLogin}"
+		method="post">
+		<input  v-model="userInfo.strUserName" name="strUserName" placeholder="用户名/手机号"  type="text" />
+		<input  v-model="userInfo.strPassword" name="strPassword"  placeholder="密码" type="password" /> 
+		<input type="button" value="登陆" v-on:click="tbLogin" /> 
+	</form>  
+ 
+</body> 
+<script type="text/javascript" th:inline="javascript" >   
+	var app = new Vue({
+		el:"#form1",
+		data (){
+			return {
+				userInfo:[[${TempData.user}]] 
+			}
+		},
+		methods:{
+			initEvent(){  
+			},
+			tbLogin(){
+				axios({
+					method:"POST",
+					url: "/Login/DevelopLogin",
+					params:this.userInfo,
+					//withCredentials: false //表示跨域请求时是否需要使用凭证 
+				}).then((data)=>{
+					Promise.resolve(data.data);
+					data = data.data;
+				 	if(data.result!="ok"){
+				 		alert(data.errMsg);
+				 	}  
+				}).catch((ex)=>{
+					 alert(ex.response.data.message);
+				}); 
+			} 
+		},
+		 mounted () { 
+		},
+		  destroyed (){ 
+		} 
+	}) 
+</script>
+ 
+</html>

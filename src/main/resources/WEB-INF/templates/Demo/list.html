@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html  xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <title> list page</title>
 </head>
 <body>
@@ -27,13 +27,13 @@
                 <td th:text="${user.Id}">1</td>
                 <td th:text="${user.strName}">11</td>
                 <td>
-                    <a href="view.html" th:href="@{'/Demo/' + ${user.Id}}"
+                    <a th:href="@{'/Demo/' + ${user.Id}}"
                        th:text="${user.strName}">wss</a></td>
             </tr>
         </tbody>
 
     </table>
 
-    <div th:replace="~{Shared/footer :: footer}">...</div>
+    <div th:replace="Shared/footer :: footer">...</div>
 </body>
 </html>

@@ -99,8 +99,9 @@ public class DemoController {
      */
     @GetMapping(value = "delete/{id}")
     public ModelAndView delete(@PathVariable("id") Long id, Model model) {
-        
-        model.addAttribute("userList",this.userList());
+    	List<JMap>  users=this.userList();
+    			users.remove(0);
+        model.addAttribute("userList",users);
         model.addAttribute("title", "删除用户");
         return new ModelAndView("Demo/list", "mUser", model);
     }
