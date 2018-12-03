@@ -1,11 +1,16 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8" />
-<title th:text="${TempData.Title}"></title>
-<script src="/Scripts/Develop/test.js"  th:src="@{/Scripts/Develop/test.js}"></script>
+<title th:text="${TempData.strPageTitle}"></title>
+<script src="/Scripts/Develop/test.js"
+	th:src="@{/Scripts/Develop/test.js}"></script>
 </head>
-<body>
-	
+<body> 
+<div th:replace="Shared/DevelopTop::developTop"></div>
+<div th:replace="Shared/DevelopNavigation::developNnavigation"></div>
+<div th:replace="Shared/DevelopCenter::developCenter"></div> 
+<div th:replace="Shared/DevelopFooter::developFooter"></div>
+	 
 </body>
 </html>

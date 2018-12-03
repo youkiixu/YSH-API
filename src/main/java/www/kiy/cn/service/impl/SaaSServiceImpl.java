@@ -152,7 +152,8 @@ public class SaaSServiceImpl implements SaaSService {
 		// TODO Auto-generated method stub
 		JMap config = this.getAppConfig(strAppid);
 		List<JMap> lst = systemService.getDataTableByMethod(config, strMethod, param);
-
+		if(lst.size()==0)
+			return 
 		return lst;
 	}
 

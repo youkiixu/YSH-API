@@ -19,8 +19,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
-import javax.crypto.spec.IvParameterSpec;
- 
+import javax.crypto.spec.IvParameterSpec; 
 
 import www.kiy.cn.HotKey.eRSAType; 
 /**
@@ -32,12 +31,21 @@ import www.kiy.cn.HotKey.eRSAType;
  * 非对称加解密
  * @author Administrator
  *
- */
+ */ 
+
 public class YSHEncrypt {
+	private static YSHEncrypt myencrypt =null;
+	
+	public static YSHEncrypt getEncryptInstance(){
+		if(myencrypt==null){
+			myencrypt = new YSHEncrypt();
+		}
+		return myencrypt;
+	}
 	
 	private  final int KEYSIZE = 512;
 	private KeyPair keyPair;  
-	public String signData(String data, String strPrivateKey) {
+	public  String signData(String data, String strPrivateKey) {
 
 		return signData(data, strPrivateKey, eRSAType.privateKey);
 	}

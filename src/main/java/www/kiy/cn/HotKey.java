@@ -13,6 +13,7 @@ package www.kiy.cn;
  *         3、枚举必须以e开头
  */
 public class HotKey {
+	
 	/*******************************************缓存  start********************************************************/
 	/**
 	 * domain配置缓存
@@ -45,6 +46,7 @@ public class HotKey {
 	public static final String QgetSysInvokeMethod = "getSysInvokeMethod";
 
 	public static final String QSysDBConfigInfo = "SysDBConfigInfo";
+	 
 	/*******************************************查询方法  end********************************************************/
 
 	//public static final String 
@@ -76,4 +78,5 @@ public class HotKey {
 	public enum eCmdType{
 		insert,delete,update
 	}
+	 
 }

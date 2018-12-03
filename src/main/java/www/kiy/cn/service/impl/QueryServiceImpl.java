@@ -320,14 +320,15 @@ public class QueryServiceImpl implements QueryService {
 				if (map != null && (map.containsKey(strFliterParam) || map.containsKey(strFliterParam1))) {
 
 					// 处理值 将 @变成:参数名 或 参数名
-					if (/* map.containsKey(strFliterParam) && */ Convert.ToString((map.get(strFliterParam)))
-							.equals("undefined")) {
-						map.remove(strFliterParam);
-						continue;
-					} else if (Convert.ToString(map.containsKey(strFliterParam1)).equals("undefined")) {
-						map.remove(strFliterParam1);
-						continue;
-					} else {
+//					if (map.containsKey(strFliterParam) &&  Convert.ToString((map.get(strFliterParam)))
+//							.equals("undefined")) {
+//						map.remove(strFliterParam);
+//						continue;
+//					} else if (Convert.ToString(map.containsKey(strFliterParam1)).equals("undefined")) {
+//						map.remove(strFliterParam1);
+//						continue;
+//					} else 
+					{
 						Object objVal;
 						if (map.containsKey(strFliterParam))
 							objVal = map.getWithRemoveKey(strFliterParam);
@@ -350,8 +351,10 @@ public class QueryServiceImpl implements QueryService {
 							break;
 						}
 					}
-					if (strColumn.isEmpty())
+					if (strColumn.isEmpty()){
+						strValue = strValue.replace(strFliterParam, strFliterParam2);
 						str.append(String.format(" %s ", strValue));
+					} 	
 					else {
 						str.append(String.format(" %s ", strColumn));
 						if (strRule.toUpperCase() == "LIKE")

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8" />
-<title th:text="${TempData.Title}"></title>
+<title th:text="${TempData.strPageTitle}"></title>
 <script src="/Scripts/vue.js" th:src="@{/Scripts/vue.js}"></script> 
 <script src="/Scripts/axios.min.js" th:src="@{/Scripts/axios.min.js}"></script>  
 <script src="/Develop/test.js" th:src="@{/Develop/test.js}"></script> 
@@ -27,7 +27,7 @@
 		el:"#form1",
 		data (){
 			return {
-				userInfo:[[${TempData.user}]] 
+				userInfo:[[${TempData.mDevelopUser}]] 
 			}
 		},
 		methods:{
@@ -44,7 +44,9 @@
 					data = data.data;
 				 	if(data.result!="ok"){
 				 		alert(data.errMsg);
-				 	}  
+				 	} else{
+				 		
+				 	}
 				}).catch((ex)=>{
 					 alert(ex.response.data.message);
 				}); 
