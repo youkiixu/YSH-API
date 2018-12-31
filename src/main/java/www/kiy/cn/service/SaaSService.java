@@ -35,6 +35,11 @@ public interface SaaSService {
 			throws Exception;
 
 	JMap tbSaaSSave(JMap config, String returnID_tblName, JMap data, JMap relation, eSqlType type) throws Exception;
+ 
+	List<JMap> getDataTableByMethodByCache(String uid, String key, String strAppid, String strMethod, JMap param)
+			throws Exception;
+
+	List<JMap> getDataTableByMethodByCache(String uid, String strAppid, String strMethod, JMap param) throws Exception;
 
 	 
 

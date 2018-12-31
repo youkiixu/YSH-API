@@ -149,24 +149,37 @@ public class SaaSServiceImpl implements SaaSService {
 
 	@Override
 	public List<JMap> getDataTableByMethod(String strAppid, String strMethod, JMap param) throws Exception {
-		// TODO Auto-generated method stub
 		JMap config = this.getAppConfig(strAppid);
 		List<JMap> lst = systemService.getDataTableByMethod(config, strMethod, param);
-		if(lst.size()==0)
-			return 
 		return lst;
 	}
-
-	// /**
-	// *
-	// * @param strAppid
-	// * @param data Map<String,Object>
-	// * @return
-	// */
-	// public JMap tbSaaSSave(String strAppid,JMap data){
-	//
-	// return tbSaaSSave(strAppid,null,data);
-	// }
+	/**
+	 * 不推荐使用
+	 */
+	@Override
+	public List<JMap> getDataTableByMethodByCache(String uid,String strAppid, String strMethod, JMap param) throws Exception {
+		//String key = SetLog.GetJSONString(param);
+		return getDataTableByMethodByCache( uid, strMethod, strAppid,  strMethod,  param);
+	} 
+	@Override
+	public List<JMap> getDataTableByMethodByCache(String uid,String key,String strAppid, String strMethod, JMap param) throws Exception {
+		// TODO Auto-generated method stub
+		List<JMap> lst = cacheInfo.getListFromMap(key, uid);
+		if(lst==null){
+			lst = new ArrayList<JMap>(); 
+		}
+		
+		if (lst.size() > 0)
+			return lst;
+		
+		List<JMap> lst1 = this.getDataTableByMethod(strAppid, strMethod, param);
+		if(lst1.size()>0){
+			lst.addAll(lst1);
+			cacheInfo.putListToMap(key, uid, lst);
+		}
+		return lst1;
+	}
+	
 
 	/**
 	 * 

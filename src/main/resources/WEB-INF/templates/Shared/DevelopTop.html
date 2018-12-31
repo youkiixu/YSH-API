@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8" />
-<title th> </title>
+<title th="${TempData.strPageTitle"> </title>
 </head>
 <body> 
-	<div data-th-fragment="developTop">
-		<!-- <h1 th:text="${TempData.mDevelopUser}">欢迎使用印生活开发工具</h1> -->
-		<h1 th:text="${TempData.strPageTitle}">欢迎使用印生活开发工具</h1> 
+	<div data-th-fragment="developTop"> 
+		<h1 th:text="${TempData.strPageTitle}"  text-align="center" ></h1> 
 	</div> 
 </body>
 </html> 

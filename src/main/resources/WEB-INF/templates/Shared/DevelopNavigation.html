@@ -1,12 +1,58 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8" />
 <title>导航栏</title>
+
 </head>
 <body>
-	<div data-th-fragment="developNnavigation">
+	<div data-th-fragment="developNnavigation"
+		style="height: 80px; top: 120px; left: 10px; position: absolute">
+
 		<div>此处是导航栏</div>
+	<!-- 	<div th:fragment="TreeModel(data)">
+			<ul>
+				<li th:each="menu : ${data}">
+					<span th:text="${menu.text}" th:id="${menu.id}"></span>
+				</li>
+			</ul>
+		</div>
+		<div th:insert="TreeModel :: TreeModel(${TempData.data.data})"></div> -->
+
+
+	  	<ul>
+			<li th:each="menu : ${TempData.data.data}">
+				<span th:text="${menu.text}" th:id="${menu.id}"></span> 
+				<ul th:if="${menu.children.size()}>0">
+					<li th:each="children : ${menu.children}">
+						<span th:text="${children.text}" th:id="${children.id}"></span> 
+						<ul th:if='${ children.get("children") !=null }'>
+							<li th:each="children2 : ${children.children}">
+								<span th:text="${children2.text}" th:id="${children2.id}"></span>
+								<ul th:if='${ children2.get("children") !=null }'>
+									<li th:each="children3 : ${children2.children}">
+										<span th:text="${children3.text}" th:id="${children3.id}"></span>
+											<ul th:if='${ children3.get("children") !=null }'>
+												<li th:each="children4 : ${children3.children}">
+												<span th:text="${children4.text}" th:id="${children4.id}"></span> 
+												</li>
+											</ul> 
+									</li>
+								</ul> 
+								
+							</li>
+						</ul> 
+					</li>
+				</ul>
+			</li>
+		</ul> 
+		<script type="text/javascript" th:inline="javascript">
+			/*<![CDATA[*/
+			//id=1001, state=closed, strParent=100, text=系统设置
+			var menu = "";//[[${TempData.data}]] 
+			/*]]>*/
+		</script>
+
 	</div>
 </body>
 </html>
