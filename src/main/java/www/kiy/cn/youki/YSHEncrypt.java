@@ -284,11 +284,17 @@ public class YSHEncrypt {
 		byte[] s = Convert.ToBase64Byte(strKey);
 		X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(s);
 		return x509KeySpec;
-	}  
+	}
+	
+	
+
 	private KeyFactory getKeyFactory() throws NoSuchAlgorithmException {
 		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 		return keyFactory;
-	} 
+	}
+
+	
+
 	private Object DesCode(String str, int MODE, String strKey, JMap k, eRSAType t) {
 		byte[] bkey = null;
 		byte[] biv = null;

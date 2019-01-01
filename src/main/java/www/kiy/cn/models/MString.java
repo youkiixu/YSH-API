@@ -10,6 +10,5 @@ public class MString {
 	
 	public static final String mDevelopUser = "mDevelopUser";
 	public static final String strPageTitle = "strPageTitle";
-	public static final String data = "data";
 
 }

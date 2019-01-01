@@ -88,7 +88,7 @@ public class LoginController {
 		rep.addCookie(p);  
 		
 		JMap par= new JMap();
-		par.put(MUserInfo.$strCode,strUserName); 
+		par.put("$strCode",strUserName); 
 		List<JMap> list=  saas.getDataTableByMethod(HotKey.eSaaSAppKey.YSH00000006.name(),HotKey.QgetAdminUserInfo , par);
 		if(list.size()==0)
 			return SetLog.writeMapError(MNotices.Login.errorUser);
@@ -100,7 +100,7 @@ public class LoginController {
 			return SetLog.writeMapError(MNotices.Login.errorPW); 
 		HttpSession session = req.getSession();
 		session.setAttribute(HotKey.strUidSession, strUserName); 
-		session.setAttribute(HotKey.mUserSession, userInfo);   
+		session.setAttribute(HotKey.mUserSession, userInfo);  
 		return SetLog.writeMapSuccess(MNotices.Login.successLogin);
 	}
 }
